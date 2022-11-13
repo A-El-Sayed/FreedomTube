@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/public/main-styles.css">
+    <title>People Finder</title>
+  </head>
+  <body>
+   <h1>People Finder</h1>
+   <main>
+       <p>This site finds people in stevens institute of tech. It allows you to get their personal details </p>
+       <form method = "POST" action="/api/posts" enctype="multipart/form-data">
+           
+           <label for="videoUploader"> Upload Video:  </label>
+           <input type="file" name="video" id="videoUploader">
+           <button type="submit">Submit</button>
+           
+       </form>
+   </main>
+  </body>
+</html>
