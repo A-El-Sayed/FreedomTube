@@ -1,0 +1,13 @@
+<h1>{{title}}</h1>
+<main>
+    <ul>
+        {{#each video}}
+            <h2>{{caption}}</h2>
+            <video width="320" height="240" controls> 
+                <source src={{imageUrl}} type="video/mp4">
+                <source src={{imageUrl}} type="video/ogg">
+                Your browser does not support the video tag.
+            </video>
+        {{/each}}
+    </ul>
+</main>

@@ -1,0 +1,12 @@
+<h1>{{title}}</h1>
+<h2>{{searchPersonName}}</h2>
+<main>
+    <ul>
+        {{#each people}}
+            <li>
+                <a href="/persondetails/{{id}}">{{firstName}} {{lastName}}</a>
+            </li>
+        {{/each}}
+    </ul>
+    <a href="/">Make another search</a>
+</main>
