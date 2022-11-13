@@ -86,7 +86,7 @@ router
     const insertInfo = await postCollection.insertOne(data);
   
     
-    res.status(201).send(insertInfo)
+    res.redirect('/');
   })
 
 
