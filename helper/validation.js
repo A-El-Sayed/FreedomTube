@@ -1,4 +1,66 @@
+const { ObjectId } = require("mongodb")
+
+
+let shallowCompare = (obj1, obj2) =>
+  Object.keys(obj1).length === Object.keys(obj2).length &&
+  Object.keys(obj1).every(key => 
+    obj2.hasOwnProperty(key) && obj1[key] === obj2[key]
+  );
+
+let validateID = (id) => {
+    validateString("id", id, "^.*$", "invalid format for id");
+    id = id.trim();
+    if (!ObjectId.isValid(id)) throw "invalid object id";
+    return id
+}
+
+//must supply a nonempty array that contains nonempty strings
+//if no regex supplied it allows any letters and numbers.
+let validateIDArray = (input) => {
+    if (!input || !Array.isArray(input)) throw "You must provide an array"
+    // if (input.length===0) throw "Must have atleast one element"
+    let x = input.map(element => {return validateID(element);}); 
+    return x;
+}
+
+//check if input is an int
+/**
+ * The int must be a whole number
+ * Check if the value is between and includes startingRange and endRange. Returns the int
+ * @param {*} parameterName 
+ * @param {*} input 
+ * @param {*} startingRange -inclusive
+ * @param {*} endRange -inclusive
+ */
+ let validateInt = (parameterName, input, startingRange, endingRange) => {
+    if (!input) throw `${parameterName} is missing an input`
+    if (typeof input !== 'number') throw `${parameterName} must be an int`
+    
+    if(input>endingRange || input<startingRange){
+        throw `${parameterName} is not in range [${startingRange},${endingRange}]`
+    }
+
+    //check if whole number is a whole number
+    if (!input.toString().match(String.raw `^\d{1,}$`)){
+        throw `${parameterName} must be an int`
+    }
+
+    return input;
+}
+
+
 // these validation do not return value;
+
+let validateString = async (parameterName, input, regex = "^.*$", errorMessage) => {
+    if (!input) throw `${parameterName} is missing an input`
+    if (typeof input !== 'string') throw `${parameterName} must be a string`
+    if (input.trim().length === 0) throw `${parameterName} Cannot be an empty string or string with just spaces`
+    // input = input.trim()
+
+    if(!input.match(regex)){
+      throw `${errorMessage}`
+    }
+}
 
 
 async function checkIsProperString(str,strName){
@@ -120,5 +182,10 @@ module.exports = {
     checkIsOnlyLetter,
     checkIsProperName,
     checkIsOnlyNum,
-    checkIsProperDate
+    checkIsProperDate,
+    validateString,
+    shallowCompare,
+    validateID,
+    validateIDArray,
+    validateInt
 };

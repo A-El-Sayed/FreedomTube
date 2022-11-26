@@ -9,13 +9,13 @@ const path = require('path');
 router.route("/upload").get(async (req, res) => {
   //code here for GET
     //res.sendFile(path.resolve('static/homepage.html'));
-    res.render('upload',{
+    res.render('./protected/upload',{
     })
 });
 
 router.route("/").get(async (req,res) => {
     let result = await axios.get("http://localhost:3000/api/posts");
-    res.render('home', {
+    res.render('./protected/home', {
         title: "Home",
         video: result.data
     })
