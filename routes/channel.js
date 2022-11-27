@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const data = require('../data');
-const channelData = data.channel;
+const channelData = data.users
 
 
 
@@ -9,34 +9,55 @@ const channelData = data.channel;
 // get all channels
 router.route('/').get(async(req,res) => {
     try {
-        const allChannel = await channelData.getAllChannel();
+        const allChannels = await channelData.getAllChannels();
+        console.log("Get all channels");
+        console.log(allChannels);
         res.render('channel/error', {error: e});
     } catch(e) {
         res.status(500).render('error', {error: e});
     }
     
 })
+
+router.route('/delete')
+.get(async (req, res) => {
+    res.render('./protected/deleteChannel',{
+        username: req.session.user.username
+    })
+})
+.delete(async (req, res) => {
+    let output;
+    try{
+        output = await channelData.removeChannel(req.session.user.username)
+        // res.render('./protected/logout'); //no idea why it is not rendering. I think it is because I need to refresh. Normally, you change route and then render. Here you render twice with the same endpoint /delete. We call "get" and "delete" on /delete
+        res.redirect('../../logout')
+        
+    }catch(error){
+        res.render('error', {error: error})
+    }
+})
+
+
 // get channel by Id
 router.get('/:channelId', async(req, res) => {
-    const chennelId = req.params.channelId.trim();
+    const channelID = req.params.channelId.trim();
 
     // check input
     try {
-        await channelData.getChannelById(chennelId);
+        let result = await channelData.getChannelById(channelID);
+        res.render('channel/channelFound', {
+            username: result.username,
+            subscriber: result.subscribers.toString(),
+            totalviews: result.totalViews.toString(),
+            subscribedChannels: result.subscribedChannels.toString(),
+            videosID: result.videosID.toString(),
+        });
     } catch(e) {
-        res.status(400).render('error', {error: e});
-    }
-
-    try {
-        let result = await channelData.getChannelById(chennelId);
-        if (!result) {
-            res.status(404).render('channelNotFound', {searchChannel: chennelId});
-            return;
-        }
-        res.render('channel/channelFound', {channelData: result});
-    } catch(e) {
+        if (e === "No user with that id") {
+            res.status(404).render('channel/channelNotFound', {searchChannel: channelID});
+        }else{
         res.status(500).render('error', {error: e});
-    }
+    }}
 
 })
 
@@ -64,44 +85,6 @@ router.get('/:channelName', async(req, res) => {
 
 })
 
-// create a channel
-router.route('new')
-.get(async(req, res) => {
-    res.render('channel/new');
-})
-.post(async(req, res) => {
-    const userInputData = req.body;
-    let errors = [];
-
-    if (!userInputData.channelName) {
-        errors.push('No channelName provided');
-    }
-
-    if (!userInputData.email) {
-        errors.push('No email provided');
-    }
-    
-    if (errors.length > 0) {
-        res.render('channel/new', { // redirect to create page to ask correct input from user
-        errors: errors,
-        hasErrors: true,
-        userInputData: userInputData,
-        });
-        return;
-    }
-
-    try {
-        const newChannel = await channelData.addChannel(
-        userInputData.channelName,
-        userInputData.email,
-        );
-
-        res.redirect(`/channel/${newChannel._id}`); // redirect to user channel page
-    } catch (e) {
-        res.status(500).json({error: e});
-    }
-})
-
 //update a channel
 router.route('/update/:id')
 .get(async(req, res) => {
@@ -118,7 +101,7 @@ router.route('/update/:id')
     try {
         let result = await channelData.getChannelById(req.params.id.trim())
         if (!result) {
-            res.status(404).render('channelNotFound', {searchChannel: chennelId});
+            res.status(404).render('channelNotFound', {searchChannel: channelID});
             return;
         }
         res.render('channel/updatePage', {channelData: result});
@@ -157,22 +140,7 @@ router.route('/update/:id')
     }
     
 })
-.delete(async (req, res) => {
-    
-    try {
-        await channelData.getChannelById(req.params.id);
-    } catch (e) {
-        res.status(404).render('channelNotFound', {searchChannel: channelId})
-        return;
-    }
 
-    try {
-        await channelData.removeChannel(req.params.id);
-        res.redirect('/'); // redirect to homepage
-    } catch (e) {
-        res.status(500).render('error', {error: e});
-    }
-})
 
 
 module.exports = router;

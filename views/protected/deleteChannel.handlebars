@@ -1,0 +1,12 @@
+<nav>
+    <a href="http://localhost:3000/videoFeedRoutes/">Home</a> |
+    <a href="http://localhost:3000/videoFeedRoutes/upload">UPLOAD</a> |
+    <a href="http://localhost:3000/channel/delete">DELETE</a> 
+</nav>
+
+<p>Delete user: </p>
+<p>{{username}}</p>
+<form action="/channel/delete" method="POST">
+    <input type="hidden" name="_method" value="DELETE">
+    <input type="submit" value="Delete">
+</form>

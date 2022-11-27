@@ -1,0 +1,17 @@
+{{#if error}}
+<div class="form-group">
+    <div class="alert alert-danger">
+        {{ error }}
+    </div>
+</div>
+{{/if}}
+
+<form method="POST" action="/login" id="login-form">
+    <label for="usernameInput" id="userLabel">Username:</label>
+    <input type="text" id="usernameInput" name="usernameInput">
+    <label for="passwordInput" id="passwordLabel">Password:</label>
+    <input type="password" id="passwordInput" name="passwordInput">
+    <button type="submit">Submit</button>
+</form>
+<a href="/register">Click here to register!</a>
+

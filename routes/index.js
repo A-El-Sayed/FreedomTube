@@ -3,14 +3,19 @@
 const postRoutes = require('./post');
 const videoFeedRoutes = require('./videoFeed');
 const channelRoutes = require('./channel');
+const userRoutes = require('./users');
 
 const constructorMethod = (app) => {
     app.use('/api/posts', postRoutes);
-    app.use('/', videoFeedRoutes);
+    app.use('/videoFeedRoutes', videoFeedRoutes);
     app.use('/channel', channelRoutes);
+    app.use('/', userRoutes);
     
     app.use('*', (req, res) => { //TODO Might never be called? since everything will go to 5.
-        console.log("hello");
+        res.status(404).render('error', {
+            title: "error",
+            error: 'invalid url'
+        })
     });
 };
   
