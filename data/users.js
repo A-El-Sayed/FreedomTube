@@ -114,6 +114,16 @@ const getChannelById = async (id) => {
     return user;
 };
 
+const getChannelByUsername = async (username) => {
+  helpers.validateString("username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
+  username = username.toLowerCase();
+  const userCollection = await users();
+  const user = await userCollection.findOne({username: username});    
+  if (user === null) throw 'No user with that id';
+    user._id = await user._id.toString(); //Why need await? Call method on a promise. IDK but without await it is equal to the function and not return
+    return user;
+  };
+
 /**
  * Given the username, removes the Channel. Returns a string - could not delete Channel with id of ${id} 
  * @param {*} username 
@@ -132,6 +142,28 @@ const getChannelById = async (id) => {
   
   return `${username} has been successfully deleted!`;
   };
+
+  const insertVideoToChannel = async(
+    id,
+    s3Name
+) => {
+
+    id = helpers.validateID(id);
+
+    const userCollection = await users();
+    const user = await userCollection.findOne({_id: ObjectId(id)});
+    if (user === null) throw 'No user with that id';
+  
+    const updatedInfo = await userCollection.updateOne(
+        {_id: ObjectId(id)},
+        {$push: {videosID : s3Name}}
+      );
+      if (updatedInfo.modifiedCount === 0) {
+        throw 'could not update channel successfully'; 
+      }
+    
+      return await getChannelById(id); 
+}
 
 
 
@@ -201,6 +233,23 @@ const updateChannel = async(
       return await getUserById(id); 
 }
 
+const deleteVideoByS3Name = async(
+  username,
+  s3Name
+) => {
+  const userCollection = await users();
+  const user = await userCollection.findOne({username: username});
+  if (user === null) throw 'No user with that id';
+
+  const updatedInfo = await userCollection.updateOne(
+      {username: username},
+      {$pull: {videosID : s3Name}}
+    );
+    if (updatedInfo.modifiedCount === 0) {
+      throw 'could not update channel successfully'; 
+    } 
+}
+
 
 
 module.exports = {
@@ -209,5 +258,8 @@ module.exports = {
   getAllChannels,
   getChannelById,
   removeChannel,
-  updateChannel
+  updateChannel,
+  getChannelByUsername,
+  insertVideoToChannel,
+  deleteVideoByS3Name
 };

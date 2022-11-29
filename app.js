@@ -48,6 +48,14 @@ app.use(session({
     next();
   });
 
+  app.use('/api/posts/delete', (req, res, next) => {
+    let updatedData = req.body;
+    if (req.method == 'POST' && updatedData._method){
+      req.method = updatedData._method
+    }
+    next();
+  });
+
 
 //Authentication Middleware - one more safeguard for protected
 app.use('/protected', (req, res, next) => {

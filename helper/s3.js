@@ -17,7 +17,7 @@ const s3Client = new S3Client({
 })
 
 
-const uploadFile = (fileBuffer, fileName, mimetype) => {
+const uploadFile = async(fileBuffer, fileName, mimetype) => {
   const uploadParams = {
     Bucket: bucketName,
     Body: fileBuffer,
@@ -25,16 +25,16 @@ const uploadFile = (fileBuffer, fileName, mimetype) => {
     ContentType: mimetype
   }
 
-  return s3Client.send(new PutObjectCommand(uploadParams));
+ await s3Client.send(new PutObjectCommand(uploadParams));
 }
 
-const deleteFile = (fileName) => {
+const deleteFile = async(fileName) => {
   const deleteParams = {
     Bucket: bucketName,
     Key: fileName,
   }
 
-  return s3Client.send(new DeleteObjectCommand(deleteParams));
+  await s3Client.send(new DeleteObjectCommand(deleteParams));
 }
 
 const  getObjectSignedUrl =  async (key) => {
