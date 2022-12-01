@@ -8,13 +8,12 @@ const fs = require('fs');
 const util = require('util');
 const path = require('path');
 const unlinkFile = util.promisify(fs.unlink); //similar to bluebird?
-
+const data = require('../data');
+const postData = data.posts;
+const userData = data.users;
+let s3 = require("../helper/s3");
 
 const { uploadFile, deleteFile, getObjectSignedUrl } = require('../helper/s3');
-
-//get database collections
-const {posts} = require("../config/mongoCollections.js");
-
 
 
 //middleware
@@ -58,51 +57,55 @@ const generateFileName = (bytes = 32) => crypto.randomBytes(bytes).toString('hex
 router
   .route('/')
   .get(async (req, res) => {
-    const postCollection = await posts();
-    const postsArray = await postCollection.find({}).toArray();
+    let postsArray = await postData.getAllPosts();
   
     for (let post of postsArray) {
-      post.imageUrl = await getObjectSignedUrl(post.imageName)
+      post.imageUrl = await getObjectSignedUrl(post.s3Name)
     }
     res.send(postsArray)
   })
   .post(uploadMiddleware, async (req, res) => {
     const file = req.file
-    const caption = req.body.caption
-    const imageName = generateFileName()
+    const videoTitle = req.body.videoTitle
+    const s3Name = generateFileName()
   
     console.log(file)
     
     const fileStream = fs.createReadStream(file.path)
   
-    await uploadFile(fileStream, imageName, file.mimetype)
+    await uploadFile(fileStream, s3Name, file.mimetype)
     await unlinkFile(file.path)
-    let data =  {
-      imageName : imageName,
-      caption : caption
-    }
-  
-    const postCollection = await posts();
-    const insertInfo = await postCollection.insertOne(data);
-  
     
-    res.redirect('/');
+    await postData.insertPost(s3Name, videoTitle);
+    // userData.insert videoId to videoIds array of user_collection
+    let user = await userData.getChannelByUsername(req.session.user.username.toLowerCase());
+    let update = await userData.insertVideoToChannel(user._id,  s3Name);
+
+
+    res.redirect('/videoFeedRoutes/upload');
   })
 
+router
+  .route('/changeName')
+  .post( async (req, res) => {
+  const s3Name = req.body.s3Name
+  const videoTitle = req.body.videoTitle
+  // s3Name = "acd5b0265ee7331f6466771ef2fedfd0599fc0b50cbbb626bd6311324945e5ec"
+  postData.renamePost(s3Name, videoTitle)
+  res.redirect('/videoFeedRoutes/upload');
+  })
+  
 
 router
-  .route('/:id')
+  .route('/delete')
   .delete( async (req, res) => {
-  const id = +req.params.id
+  const s3Name = req.body.s3Name
+  // s3Name = "acd5b0265ee7331f6466771ef2fedfd0599fc0b50cbbb626bd6311324945e5ec"
+  userData.deleteVideoByS3Name(req.session.user.username,s3Name);
+  postData.deleteVideoByS3Name(s3Name);
+  await s3.deleteFile(s3Name);
+  res.redirect('/videoFeedRoutes/upload');
 
-  const postCollection = await posts();
-  const deletionInfo = await postCollection.deleteOne({_id: ObjectId(id)});
-
-  if (deletionInfo.deletedCount === 0) {
-    throw `Could not delete movie with id of ${id}`;
-  }
-
-  res.send("deleted")
   })
 
 module.exports = router;
