@@ -14,6 +14,12 @@ let validateID = (id) => {
     return id
 }
 
+// check if a string is a number, if so, parse it into number
+let isNumber = (string) => {
+    if (isNaN(string)) throw "This string is not a number";
+    return Number(string);
+}
+
 //must supply a nonempty array that contains nonempty strings
 //if no regex supplied it allows any letters and numbers.
 let validateIDArray = (input) => {
