@@ -7,14 +7,26 @@ const saltRounds = 16;
 
 
 
-const getChannelByVideoId = async (videoId) => {
-    videoId = helpers.validateID(videoId);
+const getChannelByS3Name = async (s3Name) => {
+  // try{
+  //   helpers.validateString("s3Name", s3Name, String.raw`^[a-z0-9]*$`, "Must be lowercase and numbers");
+  // }catch(e){
+  //   console.log(e)
+  // }
+    let user;
     const userCollection = await users();
-    const user = await userCollection.findOne({'videosID': ObjectId(videoId)}) // find the user with that video
-    if (!user) {
+    
+    
+    const userList = await userCollection.find({}).toArray();
+    userList.forEach( (element) => {
+        if(element.videosID.includes(s3Name)){
+          user = element;
+        }})
+    if(!user){
       throw `No user with that video`;
+    }else{
+      return user;
     }
-    return user;
 };
 
 
@@ -267,7 +279,7 @@ const deleteVideoByS3Name = async(
 
 
 module.exports = {
-  getChannelByVideoId,
+  getChannelByS3Name,
   createUser,
   checkUser,
   getAllChannels,

@@ -103,27 +103,34 @@ router.route("/delete").delete(async (req, res) => {
 router.route("/searchvideo").post(async (req, res) => {
   let errors = [];
   let videos = req.body;
-  // console.log(videos.searchVideoName)
+  console.log(videos.searchVideoName)
   if (!videos.searchVideoName || videos.searchVideoName.length === 0) {
     errors.push("Please enter a name to search for.");
   }
   if (errors.length > 0) {
-    res.render("views/error.handlebars", {
+    res.render("./error", {
       class: "error",
       errors: errors,
       title: "Empty Input Error",
     });
   } else {
     try {
-      const vids = await postData.searchVideobyName(videos.searchVideoName);
-      // console.log(vids);
-      res.render("views/protected/videosFoundbyName.handlebars", {
+      let vids = await postData.searchVideobyName(videos.searchVideoName);
+      // // let userObj = await userData.getChannelByS3Name("0e45d170b6b5c14f7acaf7fe57ae6d2d7b9a448c81ecefa97390292a7a7f7dea");
+      // vids = await Promise.all(vids.map(async (element) => {
+      //   let returnObj = element;
+      //   let userObj = await userData.getChannelByS3Name(returnObj.s3Name)
+      //   returnObj.username = userObj.username
+      //   return returnObj
+      // }));
+      console.log(vids);
+      res.render("./protected/videosFoundbyName", {
         title: "Videos found",
         videos: vids,
         searchVideoName: videos.searchVideoName,
       });
     } catch (e) {
-      res.render("views/protected/videosNotFound.handlebars", {
+      res.render("./protected/videosNotFound", {
         title: "Videos not Found",
         searchVideoName: videos.searchVideoName,
       });
