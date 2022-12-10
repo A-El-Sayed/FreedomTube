@@ -8,43 +8,43 @@ let {ObjectId} = require('mongodb');
 // change render if we do AJAX?
 
 // get all comments
-router
-.route('/:videoId')
-.get(async(req,res) => {
-    const videoId = req.params.videoId.trim();
+// router
+// .route('/:videoId')
+// .get(async(req,res) => {
+//     const videoId = req.params.videoId.trim();
 
-    try {
-        await commentData.getAllCommentsById(videoId);
-    } catch(e) {
-        if (e === 'No comments with that channelId') {
-            return res.status(404).render('video/videoNotFound', {videoNameOrId: videoId});
-        }
-        res.status(400).render('error', {error: e});
-    }
+//     try {
+//         await commentData.getAllCommentsById(videoId);
+//     } catch(e) {
+//         if (e === 'No comments with that channelId') {
+//             return res.status(404).render('video/videoNotFound', {videoNameOrId: videoId});
+//         }
+//         res.status(400).render('error', {error: e});
+//     }
 
-    try {
-        const allComment = await commentData.getAllCommentsById(videoId);
-        res.render('unprotected/partials/allComments'); // change render
-    }
-})
+//     try {
+//         const allComment = await commentData.getAllCommentsById(videoId);
+//         res.render('unprotected/partials/allComments'); // change render
+//     }
+// })
 // post new comment
-.post(async(req,res) => {
-    const input = req.body;  // content,like, dislike
-    const content = input.content;
-    const like = input.Like;
-    const dislike = intput.Dislike;
-    const videoId = req.params.videoId.trim();
+// .post(async(req,res) => {
+//     const input = req.body;  // content,like, dislike
+//     const content = input.content;
+//     const like = input.Like;
+//     const dislike = input.Dislike;
+//     const videoId = req.params.videoId.trim();
 
-    try {
-        const newComment = await commentData.createComment(content, like, dislike, videoId);
-        return res.redirect('/:videoId');
-    } catch(e) {
-        if (e === 'Could not add new comments') {
-            return res.status(500).render('error', {error: e});
-        }
-        return res.status(400).render('error', {error: e});
-    }
-})
+//     try {
+//         const newComment = await commentData.createComment(content, like, dislike, videoId);
+//         return res.redirect('/:videoId');
+//     } catch(e) {
+//         if (e === 'Could not add new comments') {
+//             return res.status(500).render('error', {error: e});
+//         }
+//         return res.status(400).render('error', {error: e});
+//     }
+// })
 
 
 router
@@ -52,7 +52,7 @@ router
 // delete comment
 .delete(async(req,res) => {
     const commentId = req.params.commentId.trim();
-    const videoId;
+    let videoId;
     try {
         await helpers.checkIsProperString(commentId, "commentId");
         if (!ObjectId.isValid(commentId)) throw `Error: request ID invalid object ID`;
@@ -83,7 +83,7 @@ router
     const input = req.body;  // content,like, dislike
     const content = input.content;
     const like = input.Like;
-    const dislike = intput.Dislike;
+    const dislike = input.Dislike;
     const commentId = req.params.commentId.trim();
 
     try {
