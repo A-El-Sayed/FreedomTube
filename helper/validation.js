@@ -193,5 +193,6 @@ module.exports = {
     shallowCompare,
     validateID,
     validateIDArray,
-    validateInt
+    validateInt,
+    isNumber
 };
