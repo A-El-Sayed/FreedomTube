@@ -59,12 +59,11 @@ const deleteVideoByS3Name = async (s3Name) => {
 };
 
 const searchVideobyName = async (videoTitle) => {
-  const postCollection = await posts();
-  const videos = await postCollection
-    .find({ $text: { $search: videoTitle } })
-    .limit(20)
-    .toArray();
-  return videos;
+    let posts = await getAllPosts();
+
+    var result = posts.filter(item => item.videoTitle.includes(videoTitle));
+
+    return result;
   
 };
 module.exports = {
