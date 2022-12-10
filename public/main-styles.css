@@ -2,3 +2,8 @@
 #password {
   margin-left: 10px;
 }
+
+.video {
+  width: 75%;
+	border-bottom: 1px dashed #333;
+}

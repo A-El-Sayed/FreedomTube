@@ -108,6 +108,40 @@ router
 
   })
 
+  router.route("/searchvideo").post(async (req, res) => {
+
+    let errors = [];
+    let videos = req.body;
+    // console.log(videos.searchVideoName)
+    if (!videos.searchVideoName || videos.searchVideoName.length === 0) {
+      errors.push("Please enter a name to search for.");
+    }
+    if (errors.length > 0) {
+      res.render("views/error.handlebars", {
+        class: "error",
+        errors: errors,
+        title: "Empty Input Error",
+      });
+    } else {
+      try {
+        const vids = await postData.searchVideobyName(
+          videos.searchVideoName
+        );
+        // console.log(vids);
+        res.render("views/protected/videosFoundbyName.handlebars", {
+          title: "Videos found",
+          videos: vids,
+          searchVideoName: videos.searchVideoName,
+        });
+      } catch (e) {
+        res.render("views/protected/videosNotFound.handlebars", {
+          title: "Videos not Found",
+          searchVideoName: videos.searchVideoName
+        });
+      }
+    }
+  });
+
 module.exports = router;
 
 // app.listen(8080, () => console.log("listening on port 8080"))

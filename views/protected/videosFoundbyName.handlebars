@@ -1,0 +1,26 @@
+<nav>
+  <a href="http://localhost:3000/">Home</a>
+  |
+  <a href="http://localhost:3000/videoFeedRoutes/upload">UPLOAD</a>
+  |
+  <a href="http://localhost:3000/channel/delete">DELETE</a>
+  |
+  <a href="/logout">Logout</a>
+    <form action="/searchvideo" method="POST" class="search-video">
+    <label for="search-for-person">
+      Search
+      <input type="text" name="searchVideoName" id="search-for-video" placeholder="Video Title" />
+    </label>
+    <button type="submit">Submit</button>
+  </form>
+</nav>
+<h1>Results</h1>
+<section>
+  {{#each videos}}
+  <article class="video">
+{{!-- add <a href="/videos/{{id}}">{{id}}</a> to <h2>{{videoTitle}}</h2> once we have a separate page to show the video along with all the comments and video stats --}}
+    <h2>{{videoTitle}}</h2>
+    <p>By: {{username}}</p>
+    <p>Views: {{totalviews}}</p>
+  </article>
+</section>
