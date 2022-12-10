@@ -62,8 +62,8 @@ const getAllCommentsById = async(videoId) => {
 
   // find all comments
   const commentsCollection = await comments();
-  const comments = await commentsCollection.find({channel_id: ObjectId(videoId)}).toArray();
-  if (comments === null) throw 'No comments with that channelId';
+  const comments = await commentsCollection.find({video_id: ObjectId(videoId)}).toArray();
+  if (comments === null) throw 'No comments with that videoId';
 
   // return comments with regular id
   for (var i = 0; i < comments.length(); i++) {

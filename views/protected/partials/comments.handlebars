@@ -1,0 +1,17 @@
+<div class="row" class="comment-item">
+    <h3>{{ author }}</h3>
+    <p>{{ details }}</p>
+    
+    {{#if AddReply }}
+        {{> replyForm }}
+    {{else}}
+        <a class="addReply" data-id="{{id}}">Add a reply</a>
+    {{/if}}
+
+    {{#if CloseReplies }}
+        {{#each replyArray}} {{> replies }} {{/each}}
+    {{else}}
+        <a class="seeReply" data-id="{{id}}">See replies</a>
+    {{/if}}
+</div>
+

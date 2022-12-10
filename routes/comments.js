@@ -24,7 +24,7 @@ router
 
     try {
         const allComment = await commentData.getAllCommentsById(videoId);
-        res.render('unprotected/partials/allComments'); // change render
+        // res.render('comments',  {layout: null, ...updatedData}); // change render
     }
 })
 // post new comment
@@ -32,12 +32,12 @@ router
     const input = req.body;  // content,like, dislike
     const content = input.content;
     const like = input.Like;
-    const dislike = intput.Dislike;
+    const dislike = input.Dislike;
     const videoId = req.params.videoId.trim();
 
     try {
         const newComment = await commentData.createComment(content, like, dislike, videoId);
-        return res.redirect('/:videoId');
+        return res.render('protected/partials/comments',  {layout: null, ...newComment}); // change render
     } catch(e) {
         if (e === 'Could not add new comments') {
             return res.status(500).render('error', {error: e});
@@ -83,7 +83,7 @@ router
     const input = req.body;  // content,like, dislike
     const content = input.content;
     const like = input.Like;
-    const dislike = intput.Dislike;
+    const dislike = input.Dislike;
     const commentId = req.params.commentId.trim();
 
     try {

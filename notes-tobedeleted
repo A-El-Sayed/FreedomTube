@@ -1,0 +1,38 @@
+<div>
+    <div class="col-sm-12 col-md-4">
+        <form id="new-comment-form">
+            <label>Add a comment: <textarea id="new-comment-description"></textarea></label>
+            <input type="submit" value="add new comment" />
+        </form>
+    </div>
+    <div >
+        <div class="row" class="comment-item">
+            <h3>{{ author }}</h3>
+            <p>{{ details }}</p>
+            <em>Add a reply</em>
+            <em>See replies</em>
+        </div>
+    </div>
+
+	<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+        crossorigin="anonymous"></script>
+    <script src="/public/js/basic_ajax_with_jquery.js"></script>
+</div>
+
+
+<div class="row" class="comment-item">
+    <h3>{{ author }}</h3>
+    <p>{{ details }}</p>
+    
+    {{#if AddReply }}
+        {{> replyForm }}
+    {{else}}
+        <em>Add a reply</em>
+    {{/if}}
+
+    {{#if CloseReplies }}
+        {{#each replyArray}} {{> replies }} {{/each}}
+    {{else}}
+        <em>See replies</em>
+    {{/if}}
+</div>

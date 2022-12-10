@@ -11,7 +11,7 @@ const constructorMethod = (app) => {
     app.use('/videoFeedRoutes', videoFeedRoutes);
     app.use('/channel', channelRoutes);
     app.use('/', userRoutes);
-    app.use('/comments', )
+    app.use('/comments', commentRoutes)
     
     app.use('*', (req, res) => { //TODO Might never be called? since everything will go to 5.
         res.status(404).render('error', {
