@@ -5,6 +5,19 @@ let helpers = require("../helper/validation");
 const bcrypt = require('bcryptjs');
 const saltRounds = 16;
 
+
+
+const getChannelByVideoId = async (videoId) => {
+    videoId = helpers.validateID(videoId);
+    const userCollection = await users();
+    const user = await userCollection.findOne({'videosID': ObjectId(videoId)}) // find the user with that video
+    if (!user) {
+      throw `No user with that video`;
+    }
+    return user;
+};
+
+
 const createUser = async (
   username, password
 ) => { 
@@ -105,6 +118,7 @@ const getAllChannels = async () => {
  * @param {*} id 
  * @returns movie
  */
+
 const getChannelById = async (id) => {
     id = helpers.validateID(id);
     const userCollection = await users();
@@ -253,6 +267,7 @@ const deleteVideoByS3Name = async(
 
 
 module.exports = {
+  getChannelByVideoId,
   createUser,
   checkUser,
   getAllChannels,

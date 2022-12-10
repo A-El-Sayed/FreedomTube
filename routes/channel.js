@@ -6,7 +6,7 @@ const channelData = data.users
 
 
 
-// get all channels
+// get all channels 
 router.route('/').get(async(req,res) => {
     try {
         const allChannels = await channelData.getAllChannels();
