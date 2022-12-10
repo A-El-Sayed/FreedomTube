@@ -56,7 +56,7 @@ const createComment = async(content, like, dislike, videoId) => {
 const getAllCommentsById = async(videoId) => {
   
   // check Input
-  const videoId = videoId.trim();
+  videoId = videoId.trim();
   await helpers.checkIsProperString(videoId);
   if (!ObjectId.isValid(videoId)) throw "invalid object id";
 
@@ -270,7 +270,7 @@ const deleteReply = async(replyId) => {
   // get original reply
   let oldReply = await getReply(replyId);
   
-  let commentWithReply = oldReply.channel_id;
+  // let commentWithReply = oldReply.channel_id;
 
   // find the comment with this reply id
   const commentsCollection = await comments();
@@ -278,11 +278,11 @@ const deleteReply = async(replyId) => {
   if (!commentWithReply) {
     throw `No comment with that reply`;
   }
-  let commentWithReplyObjectId = movieWithReview._id;
+  let commentWithReplyObjectId = commentWithReply._id;
 
   // delete the reply from this comment
   const updatedInfo = await commentsCollection.updateOne(
-    {_id: movieWithReviewObjectId},
+    {_id: commentWithReplyObjectId},
     {
       $pull: {Replies:{ _id: ObjectId(replyId)}}
     }

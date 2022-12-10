@@ -25,6 +25,8 @@ router
     try {
         const allComment = await commentData.getAllCommentsById(videoId);
         res.render('unprotected/partials/allComments'); // change render
+    } catch(e) {
+        return res.status(500).render('error', {error: e});
     }
 })
 // post new comment
@@ -52,7 +54,7 @@ router
 // delete comment
 .delete(async(req,res) => {
     const commentId = req.params.commentId.trim();
-    const videoId;
+    let videoId;
     try {
         await helpers.checkIsProperString(commentId, "commentId");
         if (!ObjectId.isValid(commentId)) throw `Error: request ID invalid object ID`;
