@@ -70,8 +70,8 @@
                 contentType: 'application/json',
                 data: JSON.stringify({
                     content: newDescription,
-                    like: 0,
-                    dislike: 0,
+                    like: "0",
+                    dislike: "0",
                     videoId: video_id
                 })
             };

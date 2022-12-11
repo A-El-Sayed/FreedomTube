@@ -1,6 +1,8 @@
 <div class="row" class="comment-item">
     <h3>{{ author }}</h3>
-    <p>{{ details }}</p>
+    <p>{{ content }}</p>
+
+    <p>Like: {{Like}} Dislike: {{Dislike}} Comment Data: {{commentDate}}</p>
     
     {{#if AddReply }}
         {{> replyForm }}

@@ -14,7 +14,24 @@ app.use('/public', static);
 
 
 const exphbs = require('express-handlebars');
-app.engine('handlebars', exphbs.engine({defaultLayout: 'main'}));
+const Handlebars = require('handlebars');
+
+const handlebarsInstance = exphbs.create({
+  defaultLayout: 'main',
+  // Specify helpers which are only registered on this instance.
+  helpers: {
+    asJSON: (obj, spacing) => {
+      if (typeof spacing === 'number')
+        return new Handlebars.SafeString(JSON.stringify(obj, null, spacing));
+
+      return new Handlebars.SafeString(JSON.stringify(obj));
+    }
+  },
+  partialsDir: ['views/protected/partials/']
+});
+
+
+app.engine('handlebars', handlebarsInstance.engine);
 app.set('view engine', 'handlebars');
 
 app.use(session({

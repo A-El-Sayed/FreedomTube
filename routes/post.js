@@ -116,6 +116,9 @@ router.route("/searchvideo").post(async (req, res) => {
   } else {
     try {
       let vids = await postData.searchVideobyName(videos.searchVideoName);
+      vids.forEach(video => {
+        video._id = video._id.toString();
+      });
       // // let userObj = await userData.getChannelByS3Name("0e45d170b6b5c14f7acaf7fe57ae6d2d7b9a448c81ecefa97390292a7a7f7dea");
       // vids = await Promise.all(vids.map(async (element) => {
       //   let returnObj = element;

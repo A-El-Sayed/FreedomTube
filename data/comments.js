@@ -6,7 +6,7 @@ const userData = require('./users')
 const postData = require('./posts')
 
 
-const createComment = async(content, like, dislike, videoId) => { 
+const createComment = async(content, like, dislike, videoId, author) => { 
     // like == 1 means like && like == 0 means no like/ dislike == 1 means dislike && dislike == 0 means no dislike
     // like and dislike can both equal to 0 but cannot both equal to 1;
     
@@ -26,25 +26,29 @@ const createComment = async(content, like, dislike, videoId) => {
     if (!ObjectId.isValid(videoId)) throw "invalid object id";
 
     // find the user with this videoId
-    const user = await userData.getChannelByVideoId(videoId);
+    const user = await userData.getChannelByUsername(author);
 
     // create a new comment
     const commentsCollection = await comments();
     let nowDate = new Date();
     let formatDate = (nowDate.getMonth() + 1) + "/" + nowDate.getDate() + "/" + nowDate.getFullYear();
     
+  
     let comment = {
       channel_id: user._id,
       video_id: ObjectId(videoId),
+      author : user.username,
       content: content,
       Like: like,
       Dislike: dislike,
       commentDate: formatDate,
       Replies:[]
     }
-    const insertInfo = await commentsCollection.insertOne(comment);
-    if (!insertInfo.acknowledged || !insertInfo.insertedId)
+
+      const insertInfo = await commentsCollection.insertOne(comment);
+      if (!insertInfo.acknowledged || !insertInfo.insertedId)
         throw 'Could not add new comments';
+    
 
     // return newComment with regular Id.
     comment._id = comment._id.toString();
@@ -56,19 +60,20 @@ const createComment = async(content, like, dislike, videoId) => {
 const getAllCommentsById = async(videoId) => {
   
   // check Input
+  let commentCol = mongoCollections.comments
   videoId = videoId.trim();
   await helpers.checkIsProperString(videoId);
   if (!ObjectId.isValid(videoId)) throw "invalid object id";
 
   // find all comments
-  const commentsCollection = await comments();
+  const commentsCollection = await commentCol();
   const comments = await commentsCollection.find({video_id: ObjectId(videoId)}).toArray();
   if (comments === null) throw 'No comments with that videoId';
 
   // return comments with regular id
-  for (var i = 0; i < comments.length(); i++) {
+  for (var i = 0; i < comments.length; i++) {
     comments[i]._id = comments[i]._id.toString();
-    comments[i].channel_id =  comments[i].channel_id.toStri0ng();
+    comments[i].channel_id =  comments[i].channel_id.toString();
     comments[i].video_id = comments[i].video_id.toString();
   }
 
