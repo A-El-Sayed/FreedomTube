@@ -25,19 +25,24 @@ router
     try {
         const allComment = await commentData.getAllCommentsById(videoId);
         // res.render('comments',  {layout: null, ...updatedData}); // change render
+    } catch(e){
+        console.log(e)
     }
 })
 // post new comment
 .post(async(req,res) => {
     const input = req.body;  // content,like, dislike
     const content = input.content;
-    const like = input.Like;
-    const dislike = input.Dislike;
+    const like = input.like;
+    const dislike = input.dislike;
     const videoId = req.params.videoId.trim();
 
     try {
-        const newComment = await commentData.createComment(content, like, dislike, videoId);
-        return res.render('protected/partials/comments',  {layout: null, ...newComment}); // change render
+        const newComment = await commentData.createComment(content, like, dislike, videoId, req.session.user.username);
+        console.log(newComment);
+        return res.render('./protected/partials/comments',  {
+            layout: null, 
+            ...newComment}); // change render
     } catch(e) {
         if (e === 'Could not add new comments') {
             return res.status(500).render('error', {error: e});
@@ -52,7 +57,7 @@ router
 // delete comment
 .delete(async(req,res) => {
     const commentId = req.params.commentId.trim();
-    const videoId;
+    let videoId;
     try {
         await helpers.checkIsProperString(commentId, "commentId");
         if (!ObjectId.isValid(commentId)) throw `Error: request ID invalid object ID`;

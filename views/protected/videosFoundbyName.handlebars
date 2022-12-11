@@ -11,10 +11,16 @@
     <button type="submit">Submit</button>
   </form>
 </nav>
-
-<p>Delete user: </p>
-<p>{{username}}</p>
-<form action="/channel/delete" method="POST">
-  <input type="hidden" name="_method" value="DELETE" />
-  <input type="submit" value="Delete" />
-</form>
+<h1>Results</h1>
+<section>
+  {{#each videos}}
+  <article class="video">
+    <a href="/videos/{{id}}">  <h2>{{videoTitle}}</h2> 
+    </a>
+    {{!--<h2>videoTitle</h2>
+    <p>By: {{username}}</p>
+    <p>Views: {{totalviews}}</p>
+    --}}
+  </article>
+  {{/each}}
+</section>

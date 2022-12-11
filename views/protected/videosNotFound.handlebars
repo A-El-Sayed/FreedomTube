@@ -11,10 +11,5 @@
     <button type="submit">Submit</button>
   </form>
 </nav>
-
-<p>Delete user: </p>
-<p>{{username}}</p>
-<form action="/channel/delete" method="POST">
-  <input type="hidden" name="_method" value="DELETE" />
-  <input type="submit" value="Delete" />
-</form>
+<p class="not-found">We're sorry, but no results were found for
+  {{searchVideoName}}.</p>
