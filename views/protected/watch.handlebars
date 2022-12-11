@@ -1,0 +1,36 @@
+<nav>
+    <a href="http://localhost:3000/videoFeedRoutes/">Home</a> |
+    <a href="http://localhost:3000/videoFeedRoutes/upload">UPLOAD</a> |
+    <a href="http://localhost:3000/channel/delete">DELETE</a> |
+    <a href="/logout">Logout</a>
+    <form action="/api/posts/searchvideo" method="POST" class="search-video">
+    <label for="search-for-person">
+      Search
+      <input type="text" name="searchVideoName" id="search-for-video" placeholder="Video Title" />
+    </label>
+    <button type="submit">Submit</button>
+  </form>
+</nav>
+<div >
+    <h2>{{videoTitle}}</h2>
+    <video width="320" height="240" controls> 
+        <source src={{imageUrl}} type="video/mp4">
+        <source src={{imageUrl}} type="video/ogg">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="col-sm-12 col-md-4">
+        <form id="new-comment-form">
+            <label>Add a comment: <textarea id="new-comment-description"></textarea></label>
+            <input type="hidden" name="videoId" value={{_id}}>
+            <input type="submit" value="add new comment" />
+        </form>
+    </div>
+    <div id ='comment-area'>
+        {{#each commentArray}} {{> comments }} {{/each}}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+        crossorigin="anonymous"></script>
+    <script src="/public/js/basic_ajax_with_jquery.js"></script>
+</div>

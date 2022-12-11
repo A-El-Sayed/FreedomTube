@@ -8,43 +8,48 @@ let {ObjectId} = require('mongodb');
 // change render if we do AJAX?
 
 // get all comments
-// router
-// .route('/:videoId')
-// .get(async(req,res) => {
-//     const videoId = req.params.videoId.trim();
+router
+.route('/:videoId')
+.get(async(req,res) => {
+    const videoId = req.params.videoId.trim();
 
-//     try {
-//         await commentData.getAllCommentsById(videoId);
-//     } catch(e) {
-//         if (e === 'No comments with that channelId') {
-//             return res.status(404).render('video/videoNotFound', {videoNameOrId: videoId});
-//         }
-//         res.status(400).render('error', {error: e});
-//     }
+    try {
+        await commentData.getAllCommentsById(videoId);
+    } catch(e) {
+        if (e === 'No comments with that channelId') {
+            return res.status(404).render('video/videoNotFound', {videoNameOrId: videoId});
+        }
+        res.status(400).render('error', {error: e});
+    }
 
-//     try {
-//         const allComment = await commentData.getAllCommentsById(videoId);
-//         res.render('unprotected/partials/allComments'); // change render
-//     }
-// })
+    try {
+        const allComment = await commentData.getAllCommentsById(videoId);
+        // res.render('comments',  {layout: null, ...updatedData}); // change render
+    } catch(e){
+        console.log(e)
+    }
+})
 // post new comment
-// .post(async(req,res) => {
-//     const input = req.body;  // content,like, dislike
-//     const content = input.content;
-//     const like = input.Like;
-//     const dislike = input.Dislike;
-//     const videoId = req.params.videoId.trim();
+.post(async(req,res) => {
+    const input = req.body;  // content,like, dislike
+    const content = input.content;
+    const like = input.like;
+    const dislike = input.dislike;
+    const videoId = req.params.videoId.trim();
 
-//     try {
-//         const newComment = await commentData.createComment(content, like, dislike, videoId);
-//         return res.redirect('/:videoId');
-//     } catch(e) {
-//         if (e === 'Could not add new comments') {
-//             return res.status(500).render('error', {error: e});
-//         }
-//         return res.status(400).render('error', {error: e});
-//     }
-// })
+    try {
+        const newComment = await commentData.createComment(content, like, dislike, videoId, req.session.user.username);
+        console.log(newComment);
+        return res.render('./protected/partials/comments',  {
+            layout: null, 
+            ...newComment}); // change render
+    } catch(e) {
+        if (e === 'Could not add new comments') {
+            return res.status(500).render('error', {error: e});
+        }
+        return res.status(400).render('error', {error: e});
+    }
+})
 
 
 router

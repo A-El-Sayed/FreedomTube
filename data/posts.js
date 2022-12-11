@@ -58,6 +58,30 @@ const deleteVideoByS3Name = async (s3Name) => {
   }
 };
 
+const getVideoByS3Name = async (s3Name) => {
+    // check arg
+    await helpers.checkIsProperString(s3Name, "s3Name");
+    
+    const postCollection = await posts();
+    const post = await postCollection.findOne({ s3Name: s3Name })
+    if (post === null) throw 'No post with that s3name';
+    return post;
+
+  };
+
+const getVideoByVideoID = async (videoId) => {
+    // check arg
+    await helpers.checkIsProperString(videoId, "videoId");
+    if (!ObjectId.isValid(videoId)) throw "invalid object id";
+    
+    const postCollection = await posts();
+    const post = await postCollection.findOne({ _id: ObjectId(videoId) })
+    if (post === null) throw 'No post with that videoID';
+    return post;
+
+  };
+  
+
 const searchVideobyName = async (videoTitle) => {
     let posts = await getAllPosts();
 
@@ -73,4 +97,6 @@ module.exports = {
   getVideosByUser,
   renamePost,
   searchVideobyName,
+  getVideoByS3Name,
+  getVideoByVideoID
 };

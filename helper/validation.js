@@ -39,7 +39,7 @@ let validateIDArray = (input) => {
  * @param {*} endRange -inclusive
  */
  let validateInt = (parameterName, input, startingRange, endingRange) => {
-    if (!input) throw `${parameterName} is missing an input`
+    // if (!input) throw `${parameterName} is missing an input`
     if (typeof input !== 'number') throw `${parameterName} must be an int`
     
     if(input>endingRange || input<startingRange){
