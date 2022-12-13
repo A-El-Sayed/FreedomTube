@@ -11,6 +11,7 @@ const unlinkFile = util.promisify(fs.unlink); //similar to bluebird?
 const data = require("../data");
 const postData = data.posts;
 const userData = data.users;
+const statsData = data.stats;
 let s3 = require("../helper/s3");
 
 const { uploadFile, deleteFile, getObjectSignedUrl } = require("../helper/s3");
@@ -74,11 +75,21 @@ router
     await unlinkFile(file.path);
 
     await postData.insertPost(s3Name, videoTitle);
+
+    
+    
     // userData.insert videoId to videoIds array of user_collection
     let user = await userData.getChannelByUsername(
       req.session.user.username.toLowerCase()
     );
     let update = await userData.insertVideoToChannel(user._id, s3Name);
+
+    // add stats
+    let video = await postData.getVideoByS3Name(s3Name);
+    let videoId = video._id;
+    videoId = videoId.toString();
+    await statsData.createStat(videoId);
+
 
     res.redirect("/videoFeedRoutes/upload");
   });

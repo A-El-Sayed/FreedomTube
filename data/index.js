@@ -2,10 +2,12 @@
 const userData = require('./users')
 const postData = require('./posts')
 const commentsData = require('./comments')
+const statsData = require('./videoStat')
 
 
 module.exports = {
     users: userData,
     posts: postData,
-    comments: commentsData
+    comments: commentsData,
+    stats: statsData
 }

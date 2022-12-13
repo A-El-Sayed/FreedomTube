@@ -30,11 +30,10 @@ const createStat = async(videoId) => {
     let newStat = {
         video_id: ObjectId(videoId),
         Title : video.videoTitle,
-        content: content,
-        views: 0,
+        Views: 0,
         Like: 0,
         Dislike: 0,
-        commentDate: []
+        Comment: []
       }
 
     const insertInfo = await statCollection.insertOne(newStat);
@@ -57,14 +56,15 @@ const getStatByVideoId = async(videoId) => {
     const stats = await statCollection.findOne({video_id : ObjectId(videoId)});
 
     if (!stats) {
-        throw 'No comment with that videoId';
+        throw 'No stats with that videoId';
     }
 
     // return the stats with regular id
     stats._id = stats._id.toString();
     stats.video_id = stats.video_id.toString();
-    for (var i = 0; i < stats.Comment.length; i++) {
-        stats.Comment[i] = stats.Comment[i].toString();
+    let comments = stats.Comment
+    for (var i = 0; i < comments.length; i++) {
+        stats.Comment[i] = comments[i].toString();
     }
 
     return stats;
@@ -88,10 +88,11 @@ const getStatById = async(statId) => {
     // return the stats with regular id
     stats._id = stats._id.toString();
     stats.video_id = stats.video_id.toString();
-    for (var i = 0; i < stats.Comment.length; i++) {
-        stats.Comment[i] = stats.Comment[i].toString();
+    let comments = stats.Comment;
+    for (var i = 0; i < comments.length; i++) {
+        stats.Comment[i] = comments[i].toString();
     }
-    
+
     return stats;
 }
 
@@ -123,8 +124,8 @@ const addViews = async(videoId) => {
     const updatedInfo = await statCollection.updateOne(
         {_id: ObjectId(statId)},
         {$set: 
-        {//content, like, dislike. Keep other fields the same
-            views: stats.views + 1
+        {
+            Views: stats.Views + 1
         }
         }
     );
@@ -162,7 +163,7 @@ const updateLikes = async(videoId, likeChange) => {
     const updatedInfo = await statCollection.updateOne(
         {_id: ObjectId(statsId)},
         {$set: 
-        {//content, like, dislike. Keep other fields the same
+        {
             Like: stats.Like + likeChange
         }
         }
@@ -255,3 +256,13 @@ const updateComment = async(videoId) => {
     }
     return await getStatByVideoId(videoId);
 }
+
+module.exports = {
+    createStat,
+    getStatByVideoId,
+    getStatById,
+    addViews,
+    updateLikes,
+    updateDislikes,
+    updateComment
+  }

@@ -17,7 +17,7 @@ router
         await commentData.getAllCommentsById(videoId);
     } catch(e) {
         if (e === 'No comments with that channelId') {
-            return res.status(404).render('video/videoNotFound', {videoNameOrId: videoId});
+            return res.status(404).render('protected/videoNotFound', {videoNameOrId: videoId});
         }
         res.status(400).render('error', {error: e});
     }

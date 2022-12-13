@@ -6,14 +6,16 @@ const channelRoutes = require('./channel');
 const userRoutes = require('./users');
 const commentRoutes = require('./comments');
 const watchRoutes = require('./watch');
+const statRoutes = require('./videoStat');
 
 const constructorMethod = (app) => {
     app.use('/api/posts', postRoutes);
     app.use('/videoFeedRoutes', videoFeedRoutes);
     app.use('/channel', channelRoutes);
     app.use('/', userRoutes);
-    app.use('/comments', commentRoutes)
-    app.use('/watch', watchRoutes)
+    app.use('/comments', commentRoutes);
+    app.use('/watch', watchRoutes);
+    app.use('/stats', statRoutes);
     
     app.use('*', (req, res) => { //TODO Might never be called? since everything will go to 5.
         res.status(404).render('error', {
