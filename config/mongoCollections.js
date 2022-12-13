@@ -20,6 +20,7 @@ NOTE: YOU WILL NEED TO CHANGE THE CODE BELOW TO HAVE THE COLLECTION(S) REQUIRED 
 module.exports = {
   posts: getCollectionFn('posts'),
   users: getCollectionFn('user_collection'),
-  comments: getCollectionFn('comments_collection')
+  comments: getCollectionFn('comments_collection'),
+  videoStat: getCollectionFn('videoStat')
 };
 
