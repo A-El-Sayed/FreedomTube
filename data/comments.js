@@ -83,7 +83,7 @@ const getAllCommentsById = async(videoId) => {
 const getCommentById = async(commentId) => {
   // check Input
   await helpers.checkIsProperString(commentId);
-  if (!ObjectId.isValid(videoId)) throw "invalid object id";
+  if (!ObjectId.isValid(commentId)) throw "invalid object id";
 
   // find comment with that id
   const commentsCollection = await comments();
@@ -166,19 +166,13 @@ const deleteCommentById = async(commentId) => {
   return `Comment has been successfully deleted!`;
 }
 
-const addReplyToComment = async(content, like, dislike, commentId) => {
+const addReplyToComment = async(content, commentId, author) => {
   // check arg
   await helpers.checkIsProperString(content, "content");
-  await helpers.checkIsProperString(like, "like");
-  await helpers.checkIsProperString(dislike, "dislike");
-  await helpers.checkIsOnlyNum(like);
-  await helpers.checkIsOnlyNum(dislike);
-  like = helpers.isNumber(like);
-  like = helpers.validateInt("like Num", like, 0, 1);
-  dislike = helpers.isNumber(dislike);
-  dislike = helpers.validateInt("dislike Num", dislike, 0, 1);
   await helpers.checkIsProperString(commentId, "commentId");
   if (!ObjectId.isValid(commentId)) throw "invalid object id";
+
+  const user = await userData.getChannelByUsername(author);
 
   // check the comment exist
   const commentsCollection = await comments();
@@ -194,10 +188,9 @@ const addReplyToComment = async(content, like, dislike, commentId) => {
   const _id  = new ObjectId();
   const reply = {
     _id: _id,
-    channel_id: returnComment.channel_id,
+    channel_id: user._id,
     Content: content,
-    Like: like,
-    Dislike: dislike,
+    Author: user.username,
     CommentDate: formatDate
   }
 
@@ -215,10 +208,10 @@ const addReplyToComment = async(content, like, dislike, commentId) => {
   }
 
   // return the comment object
-  return await getCommentById(_id.toString());
+  return await getCommentById(commentId);
 }
 
-const getAllRelies = async(commentId) => {
+const getAllReplies = async(commentId) => {
   // check arg
   await helpers.checkIsProperString(commentId, "commentId");
   if (!ObjectId.isValid(commentId)) throw "invalid object id";
@@ -256,7 +249,7 @@ const getReply = async(replyId) => {
   }
 
   let commentId = commentWithReply._id;
-  let allReplies = await getAllRelies(commentId.toString());
+  let allReplies = await getAllReplies(commentId.toString());
 
   for (var i = 0; i < allReplies.length; i++) {
     if (allReplies[i]._id == replyId) {
@@ -307,7 +300,7 @@ module.exports = {
   updateCommentById,
   deleteCommentById,
   addReplyToComment,
-  getAllRelies,
+  getAllReplies,
   getReply,
   deleteReply
 }
