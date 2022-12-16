@@ -48,9 +48,29 @@ router.route('/popularVideos').get(async (req, res) => {
         }
     } catch(e) {
         return res.status(500).render('error', {error: e})
-    }
-   
-    
+    }  
+})
+
+router.route('/history').get(async (req, res) => {
+
+    try {
+        let user = await channelData.getChannelByUsername(req.session.user.username)
+        let historyS3Array = user.history
+        let history = await Promise.all(historyS3Array.map( async(s3Name) => {return await postData.getVideoByS3Name(s3Name)}))
+        history = history.reverse()
+        if (history.length == 0) {
+            res.status(404).render('error', {errors: "No videos in history",
+            title: "No History Error",
+            class: "error"})
+        } else {
+            res.render('./protected/history', {
+                videos: history,
+                title: "History"
+            })
+        }
+    } catch(e) {
+        return res.status(500).render('error', {error: e})
+    }  
 })
 
 module.exports = router;

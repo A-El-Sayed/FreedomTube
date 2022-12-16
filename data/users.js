@@ -224,7 +224,7 @@ const insertVideoToHistory = async(
     if(history.length>6){
       const updatedInfo = await userCollection.updateOne(
         {_id: ObjectId(id)},
-        {$pop: {history : 1}}
+        {$pop: {history : -1}}
       );
       if (updatedInfo.modifiedCount === 0) {
         throw 'could not update channel successfully'; 
