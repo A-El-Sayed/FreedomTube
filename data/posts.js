@@ -23,6 +23,9 @@ const insertPost = async (s3Name, videoTitle) => {
   let data = {
     s3Name: s3Name,
     videoTitle: videoTitle,
+    Views: 0,
+    Like: 0,
+    Dislike: 0,
   };
 
   const postCollection = await posts();
@@ -93,14 +96,115 @@ const searchVideobyName = async (videoTitle) => {
 };
 
 const getPopularVideos = async () => {
-  const statsCollection = await stats();
-  let popularVideossArr = await statsCollection.find().sort({Views:-1}).limit(10).toArray();
-  let popularVideoObjs = [];
-  for (var i = 0; i < popularVideossArr.length; i++) {
-    popularVideoObjs[i] = await getVideoByVideoID(popularVideossArr[i].video_id.toString());
-  }
-  return popularVideoObjs;
+  const postsCollection = await posts();
+  let popularVideossArr = await postsCollection.find().sort({Views:-1}).limit(10).toArray();
+  return popularVideossArr;
 }
+
+
+// set middleware when get watch handlebar. Add a view each time. Views only increase?
+const addViews = async(videoId) => { 
+    // check Input
+    await helpers.checkIsProperString(videoId);
+    if (!ObjectId.isValid(videoId)) throw "invalid object id";
+    videoId = videoId.trim();
+
+    // get the video
+    let video = await getVideoByVideoID(videoId);
+    if (!video) {
+        throw `No this video with this videoId`
+    }
+
+    // update the stats(add one view)
+    const postCollection = await posts();
+    const updatedInfo = await postCollection.updateOne(
+        {_id: ObjectId(videoId)},
+        {$set: 
+        {
+            Views: video.Views + 1
+        }
+        }
+    );
+
+    if (updatedInfo.modifiedCount === 0) {
+        throw 'could not update stats successfully'; 
+    }
+
+    return await getVideoByVideoID(videoId);   
+}
+
+// likeChange = 1 || -1
+const updateLikes = async(videoId, likeChange) => {
+    // check Input
+    await helpers.checkIsProperString(videoId);
+    await helpers.checkIsProperString(likeChange);
+    likeChange = helpers.isNumber(likeChange);
+    if (likeChange !== 1 && likeChange !== -1) {
+        throw `LikeChange should be 1 or -1`
+    }
+    if (!ObjectId.isValid(videoId)) throw "invalid object id";
+    videoId = videoId.trim();
+
+    // get the stats of the video
+    let video = await getVideoByVideoID(videoId);
+    if (!video) {
+        throw `No video for this videoId`
+    }
+
+    // update the stats(change likes)
+    const postCollection = await posts();
+    const updatedInfo = await postCollection.updateOne(
+        {_id: ObjectId(videoId)},
+        {$set: 
+        {
+            Like: video.Like + likeChange
+        }
+        }
+    );
+
+    if (updatedInfo.modifiedCount === 0) {
+        throw "could not update stats' like successfully"; 
+    }
+
+    return await getVideoByVideoID(videoId);   
+}
+
+
+// dislikeChange = 1 || -1
+const updateDislikes = async(videoId, dislikeChange) => {
+    // check Input
+    await helpers.checkIsProperString(videoId);
+    await helpers.checkIsProperString(dislikeChange);
+    dislikeChange = helpers.isNumber(dislikeChange);
+    if (dislikeChange !== 1 && dislikeChange !== -1) {
+        throw `dislikeChange should be 1 or -1`
+    }
+    if (!ObjectId.isValid(videoId)) throw "invalid object id";
+    videoId = videoId.trim();
+
+    // get the stats of the video
+    let video = await getVideoByVideoID(videoId);
+    if (!video) {
+        throw `No video for this videoId`
+    }
+
+    // update the stats(change likes)
+    const postCollection = await posts();
+    const updatedInfo = await postCollection.updateOne(
+        {_id: ObjectId(videoId)},
+        {$set: 
+        {
+            Dislike: video.Dislike + dislikeChange
+        }
+        }
+    );
+
+    if (updatedInfo.modifiedCount === 0) {
+        throw "could not update stats' dislike successfully"; 
+    }
+    return await getVideoByVideoID(videoId);
+}
+
 module.exports = {
   getAllPosts,
   insertPost,
@@ -110,5 +214,8 @@ module.exports = {
   searchVideobyName,
   getVideoByS3Name,
   getVideoByVideoID,
-  getPopularVideos
+  getPopularVideos,
+  addViews,
+  updateLikes,
+  updateDislikes
 };

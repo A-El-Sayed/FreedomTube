@@ -2,6 +2,7 @@
 const express = require('express');
 const app = express();
 const stats = require('./data/videoStat');
+const userData = require('./data/users');
 const postData = require('./data/posts');
 const helpers = require('./helper/validation');
 const configRoutes = require('./routes');
@@ -17,6 +18,7 @@ app.use('/public', static);
 
 const exphbs = require('express-handlebars');
 const Handlebars = require('handlebars');
+const { getChannelByUsername } = require('./data/users');
 
 const handlebarsInstance = exphbs.create({
   defaultLayout: 'main',
@@ -123,6 +125,7 @@ app.use('/protected', (req, res, next) => {
       const watchS3Name = req.params.s3Name.trim();
       let s3;
       let videoId;
+      let userId;
 
       // input check
       try {
@@ -144,9 +147,17 @@ app.use('/protected', (req, res, next) => {
           return res.status(500).render('error', {title: "Sever Error", class: "sever-error", errors: e});
         }
       }
+      // check the user
+      try{
+        userId = (await getChannelByUsername(req.session.user.username))._id.toString()
+      } catch(e){
+        return res.status(400).render('errors', {title: "Cookie username Error", class: "error", errors: e} )
+      }
 
       // add view to this video
-      stats.addViews(videoId);
+      await postData.addViews(videoId);
+      //add to user history that he watched this video
+      await userData.insertVideoToHistory(userId, s3);
 
       next();
     }
