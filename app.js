@@ -1,7 +1,9 @@
 //Here is where you'll set up your server as shown in lecture code
 const express = require('express');
 const app = express();
-
+const stats = require('./data/videoStat');
+const postData = require('./data/posts');
+const helpers = require('./helper/validation');
 const configRoutes = require('./routes');
 
 const session = require('express-session');
@@ -109,6 +111,43 @@ app.use('/protected', (req, res, next) => {
         //not login
         return res.status(403).render('./unprotected/forbiddenAccess');
     } else {
+      next();
+    }
+  });
+
+  app.use('/watch/:s3Name', async (req, res, next) => {
+    if (!req.session.user) {
+        //not login
+        return res.status(403).render('./unprotected/forbiddenAccess');
+    } else {
+      const watchS3Name = req.params.s3Name.trim();
+      let s3;
+      let videoId;
+
+      // input check
+      try {
+        await helpers.checkIsProperString(watchS3Name);
+        s3 = watchS3Name
+      } catch(e) {
+        return res.status(400).render('errors', {title: "Input Error", class: "error", errors: e} )
+      }
+    
+      // check the video exist
+      try {
+        let video = await postData.getVideoByS3Name(s3);
+        videoId = video._id;
+        videoId = videoId.toString();
+      } catch(e) {
+        if (e == 'No post with that s3name') {
+          return res.status(404).render('videosNotFound',{searchVideoName: "videoS3Name: " + s3})
+        } else {
+          return res.status(500).render('error', {title: "Sever Error", class: "sever-error", errors: e});
+        }
+      }
+
+      // add view to this video
+      stats.addViews(videoId);
+
       next();
     }
   });

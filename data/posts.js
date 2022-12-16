@@ -1,5 +1,6 @@
 const mongoCollections = require("../config/mongoCollections");
 let posts = mongoCollections.posts;
+let stats = mongoCollections.videoStat;
 let { ObjectId } = require("mongodb");
 let helpers = require("../helper/validation");
 
@@ -90,6 +91,16 @@ const searchVideobyName = async (videoTitle) => {
     return result;
   
 };
+
+const getPopularVideos = async () => {
+  const statsCollection = await stats();
+  let popularVideossArr = await statsCollection.find().sort({Views:-1}).limit(10).toArray();
+  let popularVideoObjs = [];
+  for (var i = 0; i < popularVideossArr.length; i++) {
+    popularVideoObjs[i] = await getVideoByVideoID(popularVideossArr[i].video_id.toString());
+  }
+  return popularVideoObjs;
+}
 module.exports = {
   getAllPosts,
   insertPost,
@@ -98,5 +109,6 @@ module.exports = {
   renamePost,
   searchVideobyName,
   getVideoByS3Name,
-  getVideoByVideoID
+  getVideoByVideoID,
+  getPopularVideos
 };

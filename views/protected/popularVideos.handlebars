@@ -1,0 +1,8 @@
+<section>
+    <h1>The most popular videos</h1>
+    <ol>
+    {{#each videos}}
+        <li><a href="/watch/{{this.s3Name}}">  <h2>{{this.videoTitle}}</h2></li>
+    {{/each}} 
+    </ol>
+</section>

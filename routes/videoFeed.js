@@ -7,6 +7,7 @@ const axios = require('axios');
 const path = require('path');
 const data = require('../data');
 const channelData = data.users
+const postData = data.posts;
 
 router.route("/upload").get(async (req, res) => {
   //code here for GET
@@ -29,6 +30,27 @@ router.route("/").get(async (req,res) => {
         video: result.data
     })
 
+})
+
+router.route('/popularVideos').get(async (req, res) => {
+
+    try {
+        let popularVideos = await postData.getPopularVideos()
+        if (popularVideos.length == 0) {
+            res.status(404).render('error', {errors: "No popular videos now",
+            title: "No Found Error",
+            class: "error"})
+        } else {
+            res.render('./protected/popularVideos', {
+                videos: popularVideos,
+                title: "Popular Videos"
+            })
+        }
+    } catch(e) {
+        return res.status(500).render('error', {error: e})
+    }
+   
+    
 })
 
 module.exports = router;
