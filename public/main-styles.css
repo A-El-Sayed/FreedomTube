@@ -7,3 +7,29 @@
   width: 75%;
 	border-bottom: 1px dashed #333;
 }
+
+.toggle{
+  background-color: aqua;
+}
+
+.toggle{
+  background-color: aqua;
+}
+
+#reply-form-area{
+  border-color: red;
+  border-width: 2px;
+  border-style: solid;
+}
+
+#list-replies-area{
+  border-color: blue;
+  border-width: 2px;
+  border-style: solid;
+}
+
+.comment-item{
+  border-color: green;
+  border-width: 2px;
+  border-style: solid;
+}

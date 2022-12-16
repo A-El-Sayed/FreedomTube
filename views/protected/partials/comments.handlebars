@@ -1,19 +1,16 @@
-<div class="row" class="comment-item">
+<div class="row comment-item" data-id="{{_id}}" data-add="false" data-open="false">
     <h3>{{ author }}</h3>
     <p>{{ content }}</p>
 
     <p>Like: {{Like}} Dislike: {{Dislike}} Comment Data: {{commentDate}}</p>
     
-    {{#if AddReply }}
-        {{> replyForm }}
-    {{else}}
-        <a class="addReply" data-id="{{id}}">Add a reply</a>
-    {{/if}}
+    <a class="addReply">Add a reply</a>
+    <a class="seeReply" data-id="{{_id}}">See replies</a>
 
-    {{#if CloseReplies }}
-        {{#each replyArray}} {{> replies }} {{/each}}
-    {{else}}
-        <a class="seeReply" data-id="{{id}}">See replies</a>
-    {{/if}}
+    <div id ="reply-form-area"> 
+    </div>
+
+    <div id ="list-replies-area">
+    </div>
 </div>
 
