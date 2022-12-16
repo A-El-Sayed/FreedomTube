@@ -4,6 +4,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const data = require('../data'); //the folder refers to the index.js
 const userData = data.users;
+const commentData = data.comments;
 let helpers = require("../helper/validation");
 
 router
@@ -110,6 +111,25 @@ router
     //code here for GET
     req.session.destroy();
     res.render('./protected/logout');
+  
+  })
+
+router
+  .route('/setting')
+  .post(async (req, res) => {
+    //code here for POST
+    let { username } = req.body;
+    try {
+      helpers.validateString("username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Only alphanumeric characters and should be atleast 4 characters long")
+      username = username.toLowerCase();
+      userId = (await userData.getChannelByUsername(req.session.user.username))._id.toString()
+      await userData.updateUsername(userId, username)
+      await commentData.updateUsername(userId, username)
+      req.session.user = {username: username};
+      return res.redirect('/');
+    }catch(e){
+      return res.status(400).render('errors', {title: "Setting error", class: "error", errors: e} )
+    }
   
   })
 

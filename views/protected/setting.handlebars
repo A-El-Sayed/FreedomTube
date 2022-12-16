@@ -3,7 +3,6 @@
     <a href="http://localhost:3000/videoFeedRoutes/upload">UPLOAD</a> |
     <a href="http://localhost:3000/videoFeedRoutes/popularVideos">POPULAR</a>|
     <a href="http://localhost:3000/videoFeedRoutes/history">HISTORY</a> |
-    <a href="http://localhost:3000/videoFeedRoutes/setting">SETTING</a> |
     <a href="http://localhost:3000/channel/delete">DELETE</a> |
     <a href="/logout">Logout</a>
     <form action="/api/posts/searchvideo" method="POST" class="search-video">
@@ -14,16 +13,14 @@
     <button type="submit">Submit</button>
   </form>
 </nav>
-<h1>{{title}}</h1> {{!--home--}}
-<main>
-    <ul>
-        {{#each video}}
-            <h2>{{videoTitle}}</h2>
-            <video width="320" height="240" controls> 
-                <source src={{imageUrl}} type="video/mp4">
-                <source src={{imageUrl}} type="video/ogg">
-                Your browser does not support the video tag.
-            </video>
-        {{/each}}
-    </ul>
-</main>
+<h1>{{title}}</h1> {{!--Video Uploader--}}
+
+<form method = "POST" action="/setting">
+        
+    <label for="username"> New Username:  </label>
+    <input type="text" name="username" id="username" >
+    
+    <button type="submit">Submit</button>
+    
+</form>
+
