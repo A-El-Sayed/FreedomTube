@@ -251,6 +251,7 @@ const updateChannel = async(
     helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
     username = username.toLowerCase(); //make case insensitive
 
+    const userCollection = await users();
     const returnUser = await userCollection.findOne({username: username});
     if (returnUser){
         //duplicate exists
@@ -276,7 +277,6 @@ const updateChannel = async(
     videosID = helpers.validateIDArray(videosID);
     subscribedChannels = helpers.validateIDArray(subscribedChannels);
 
-    const userCollection = await users();
     const user = await userCollection.findOne({_id: ObjectId(id)});
     if (user === null) throw 'No user with that id';
   
@@ -300,6 +300,42 @@ const updateChannel = async(
       }
     
       return await getUserById(id); 
+}
+
+const updateUsername = async(
+  id,
+  username //channel name
+) => {
+    id = helpers.validateID(id);
+
+    helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
+    username = username.toLowerCase(); //make case insensitive
+
+    const userCollection = await users();
+    const returnUser = await userCollection.findOne({username: username});
+    if (returnUser){
+        //duplicate exists
+        throw "Username: Already a user with that username"
+    }
+
+    
+    const user = await userCollection.findOne({_id: ObjectId(id)});
+    if (user === null) throw 'No user with that id';
+  
+    const updatedInfo = await userCollection.updateOne(
+        {_id: ObjectId(id)},
+        {$set: 
+          {
+            username: username, //channel name
+            }
+        }
+    
+      );
+      if (updatedInfo.modifiedCount === 0) {
+        throw 'could not update channel successfully'; 
+      }
+    
+      return await getChannelById(id); 
 }
 
 const deleteVideoByS3Name = async(
@@ -333,5 +369,6 @@ module.exports = {
   insertVideoToChannel,
   deleteVideoByS3Name,
   getChannelByVideoId,
-  insertVideoToHistory
+  insertVideoToHistory,
+  updateUsername
 };

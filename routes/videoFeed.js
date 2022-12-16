@@ -73,4 +73,9 @@ router.route('/history').get(async (req, res) => {
     }  
 })
 
+router.route('/setting').get(async (req, res) => {
+
+    res.render('./protected/setting', {title:"setting"})
+})
+
 module.exports = router;

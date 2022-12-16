@@ -35,7 +35,7 @@ const createComment = async(content, like, dislike, videoId, author) => {
     
   
     let comment = {
-      channel_id: user._id,
+      channel_id: ObjectId(user._id),
       video_id: ObjectId(videoId),
       author : user.username,
       content: content,
@@ -293,6 +293,34 @@ const deleteReply = async(replyId) => {
   return await getCommentById(commentWithReplyObjectId.toString());
 }
 
+const updateUsername = async(userId, username) => {
+   userId = helpers.validateID(userId);
+
+    helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
+    username = username.toLowerCase(); //make case insensitive
+
+    const commentsCollection = await comments();
+    const returnUser = await commentsCollection.findOne({author: username});
+    if (returnUser){
+        //duplicate exists
+        throw "Already a commentor with that username"
+    }
+  
+    const updatedInfo = await commentsCollection.updateMany(
+        {channel_id: ObjectId(userId)},
+        {$set: 
+          {
+            author: username //channel name
+            }
+        }
+    
+      );
+      if (updatedInfo.modifiedCount === 0) {
+        throw 'could not update channel successfully'; 
+      }
+    
+}
+
 module.exports = {
   createComment,
   getAllCommentsById,
@@ -302,5 +330,6 @@ module.exports = {
   addReplyToComment,
   getAllReplies,
   getReply,
-  deleteReply
+  deleteReply,
+  updateUsername
 }
