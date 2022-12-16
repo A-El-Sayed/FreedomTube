@@ -201,6 +201,39 @@ const getChannelByUsername = async (username) => {
       return await getChannelById(id); 
 }
 
+const insertVideoToHistory = async(
+    id,
+    s3Name
+    ) => {
+    
+    id = helpers.validateID(id);
+
+    const userCollection = await users();
+    const user = await userCollection.findOne({_id: ObjectId(id)});
+    if (user === null) throw 'No user with that id';
+  
+    const updatedInfo = await userCollection.updateOne(
+        {_id: ObjectId(id)},
+        {$addToSet: {history : s3Name}}
+      );
+    if (updatedInfo.acknowledged !== true) {
+      throw 'could not update channel successfully'; 
+    }
+
+    let history = (await getChannelById(id)).history; 
+    if(history.length>6){
+      const updatedInfo = await userCollection.updateOne(
+        {_id: ObjectId(id)},
+        {$pop: {history : 1}}
+      );
+      if (updatedInfo.modifiedCount === 0) {
+        throw 'could not update channel successfully'; 
+      }
+    }
+    
+    return await getChannelById(id); 
+}
+
 
 
 const updateChannel = async(
@@ -299,5 +332,6 @@ module.exports = {
   getChannelByUsername,
   insertVideoToChannel,
   deleteVideoByS3Name,
-  getChannelByVideoId
+  getChannelByVideoId,
+  insertVideoToHistory
 };

@@ -23,8 +23,7 @@ router.get('/:watchVideoID', async(req, res) => {
 
     res.render('./protected/watch', {
         _id: post._id.toString(),
-        s3name: post.s3Name,
-        videoTitle: post.videoTitle,
+        ...post,
         imageUrl: imageUrl,
         commentArray: commentArray
     });
