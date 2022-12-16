@@ -13,16 +13,13 @@
     <button type="submit">Submit</button>
   </form>
 </nav>
-<h1>{{title}}</h1> {{!--result--}}
-<section>
-  {{#each videos}}
-  <article class="video">
-    <a href="/watch/{{s3Name}}">  <h2>{{videoTitle}}</h2> 
-    </a>
-    {{!--<h2>videoTitle</h2>
-    <p>By: {{username}}</p>
-    <p>Views: {{totalviews}}</p>
-    --}}
-  </article>
-  {{/each}}
-</section>
+<h1>{{title}}</h1> {{!--history--}}
+
+<main>
+    <h1>History (last videos watched)</h1>
+    <ol>
+    {{#each videos}}
+        <li><a href="/watch/{{this.s3Name}}">  <h2>{{this.videoTitle}}</h2></li>
+    {{/each}} 
+    </ol>
+</main>

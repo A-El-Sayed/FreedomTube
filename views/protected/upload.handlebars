@@ -1,6 +1,8 @@
 <nav>
     <a href="http://localhost:3000/videoFeedRoutes/">Home</a> |
     <a href="http://localhost:3000/videoFeedRoutes/upload">UPLOAD</a> |
+    <a href="http://localhost:3000/videoFeedRoutes/popularVideos">POPULAR</a>|
+    <a href="http://localhost:3000/videoFeedRoutes/history">HISTORY</a> |
     <a href="http://localhost:3000/channel/delete">DELETE</a> |
     <a href="/logout">Logout</a>
     <form action="/api/posts/searchvideo" method="POST" class="search-video">
@@ -11,7 +13,7 @@
     <button type="submit">Submit</button>
   </form>
 </nav>
-<h1>Video Uploader</h1>
+<h1>{{title}}</h1> {{!--Video Uploader--}}
 <main>
     <p>This site finds people in stevens institute of tech. It allows you to get their personal details </p>
     <form method = "POST" action="/api/posts" enctype="multipart/form-data">

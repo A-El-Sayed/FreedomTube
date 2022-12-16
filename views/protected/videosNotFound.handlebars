@@ -1,6 +1,8 @@
 <nav>
     <a href="http://localhost:3000/videoFeedRoutes/">Home</a> |
     <a href="http://localhost:3000/videoFeedRoutes/upload">UPLOAD</a> |
+    <a href="http://localhost:3000/videoFeedRoutes/popularVideos">POPULAR</a>|
+    <a href="http://localhost:3000/videoFeedRoutes/history">HISTORY</a> |
     <a href="http://localhost:3000/channel/delete">DELETE</a> |
     <a href="/logout">Logout</a>
     <form action="/api/posts/searchvideo" method="POST" class="search-video">
@@ -11,5 +13,7 @@
     <button type="submit">Submit</button>
   </form>
 </nav>
+<h1>{{title}}</h1> {{!--no result--}}
+
 <p class="not-found">We're sorry, but no results were found for
   {{searchVideoName}}.</p>
