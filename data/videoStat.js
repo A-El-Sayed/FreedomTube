@@ -134,7 +134,7 @@ const addViews = async(videoId) => {
         throw 'could not update stats successfully'; 
     }
 
-    return await getStatById(commentId);   
+    return await getStatByVideoId(videoId);   
 }
 
 // likeChange = 1 || -1
@@ -172,6 +172,7 @@ const updateLikes = async(videoId, likeChange) => {
     if (updatedInfo.modifiedCount === 0) {
         throw "could not update stats' like successfully"; 
     }
+
     return await getStatByVideoId(videoId);   
 }
 

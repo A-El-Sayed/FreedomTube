@@ -124,7 +124,7 @@ router.route('comment/reply/:replyId').delete(async(req,res) => {
     // delete the reply
     try {
         // delete the reply
-        let commentAfterDeleteReply = await commentDate.deleteReply(replyId);
+        let commentAfterDeleteReply = await commentData.deleteReply(replyId);
         return res.redirect('videos/' + commentAfterDeleteReply.video_id.toString());
     }
     catch(e) {
