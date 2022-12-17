@@ -2,7 +2,7 @@
     <h3>{{ author }}</h3>
     <p>{{ content }}</p>
 
-    <p>Like: {{Like}} Dislike: {{Dislike}} Comment Data: {{commentDate}}</p>
+    <div><a class="like {{toggleLike}}">Like:</a> <span class="numLikes">{{numLikes}}</span> <a class="dislike {{toggleDislike}}">Dislike:</a> <span class="numDislikes">{{numDislikes}}</span> Comment Data: {{commentDate}}</div>
     
     <a class="addReply">Add a reply</a>
     <a class="seeReply" data-id="{{_id}}">See replies</a>

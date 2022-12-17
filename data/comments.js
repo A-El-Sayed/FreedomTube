@@ -6,21 +6,11 @@ const userData = require('./users')
 const postData = require('./posts')
 
 
-const createComment = async(content, like, dislike, videoId, author) => { 
-    // like == 1 means like && like == 0 means no like/ dislike == 1 means dislike && dislike == 0 means no dislike
-    // like and dislike can both equal to 0 but cannot both equal to 1;
+const createComment = async(content, videoId, author) => { 
     
     // check input
     await helpers.checkIsProperString(content, "content");
-    await helpers.checkIsProperString(like, "like");
-    await helpers.checkIsProperString(dislike, "dislike");
-    await helpers.checkIsOnlyNum(like);
-    await helpers.checkIsOnlyNum(dislike);
-    like = helpers.isNumber(like);
-    like = helpers.validateInt("like Num", like, 0, 1);
-    dislike = helpers.isNumber(dislike);
-    dislike = helpers.validateInt("dislike Num", dislike, 0, 1);
-
+    
     await helpers.checkIsProperString(videoId, "videoId");
 
     if (!ObjectId.isValid(videoId)) throw "invalid object id";
@@ -39,8 +29,8 @@ const createComment = async(content, like, dislike, videoId, author) => {
       video_id: ObjectId(videoId),
       author : user.username,
       content: content,
-      Like: like,
-      Dislike: dislike,
+      Like: [],
+      Dislike: [],
       commentDate: formatDate,
       Replies:[]
     }
@@ -321,6 +311,85 @@ const updateUsername = async(userId, username) => {
     
 }
 
+
+// like = true or false
+const updateLikes = async(userId, commentId, like, dislike) => {
+    // check Input
+    if(typeof like !=='boolean') throw 'like must be a boolean'
+
+    if(typeof dislike !== 'boolean') throw 'dislike must be a boolean'
+    
+    if(like && dislike) throw "both like and dislike cannot be toggled at the same time"
+    
+    await helpers.checkIsProperString(commentId);
+    if (!ObjectId.isValid(commentId)) throw "invalid object id";
+    commentId = commentId.trim();
+
+    // get the comment
+    let comment = await getCommentById(commentId);
+    if (!comment) throw `No comment for this commentId`
+
+    await helpers.checkIsProperString(userId);
+    if (!ObjectId.isValid(userId)) throw "invalid object id";
+    userId = userId.trim();
+
+    // get the channel
+    let channel = await userData.getChannelById(userId);
+    if (!channel) throw `No channel for this userId`
+    
+        
+    // update the stats(change likes)
+    const commentsCollection = await comments();
+    if(like && !dislike){
+      const updatedInfo = await commentsCollection.updateOne(
+        {_id: ObjectId(commentId)},
+        {$push: {
+          Like:userId
+          },
+        $pull: {
+          Dislike:userId
+          }
+        }
+      );
+
+      if (updatedInfo.modifiedCount === 0) {
+        throw 'could not update comments successfully'; 
+      }
+    }
+    if(!like&&!dislike){
+      const updatedInfo = await commentsCollection.updateOne(
+        {_id: ObjectId(commentId)},
+        {$pull: {
+          Like:userId,
+          Dislike:userId
+          }
+        }
+      );
+
+      if (updatedInfo.modifiedCount === 0) {
+        throw 'could not update comments successfully'; 
+      }
+    }
+    if(dislike && !like){
+      const updatedInfo = await commentsCollection.updateOne(
+        {_id: ObjectId(commentId)},
+        {$push: {
+           Dislike:userId
+          },
+          $pull: {
+           Like:userId
+          }
+        }
+      );
+
+      if (updatedInfo.modifiedCount === 0) {
+        throw 'could not update comments successfully';  
+      }
+    }
+    let updatedComment = await getCommentById(commentId)
+    return { numLikes: updatedComment.Like.length, numDislikes: updatedComment.Dislike.length}
+}
+
 module.exports = {
   createComment,
   getAllCommentsById,
@@ -331,5 +400,6 @@ module.exports = {
   getAllReplies,
   getReply,
   deleteReply,
-  updateUsername
+  updateUsername,
+  updateLikes
 }

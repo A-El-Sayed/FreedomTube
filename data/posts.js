@@ -1,6 +1,6 @@
 const mongoCollections = require("../config/mongoCollections");
 let posts = mongoCollections.posts;
-let stats = mongoCollections.videoStat;
+const userData = require('./users')
 let { ObjectId } = require("mongodb");
 let helpers = require("../helper/validation");
 
@@ -24,8 +24,8 @@ const insertPost = async (s3Name, videoTitle) => {
     s3Name: s3Name,
     videoTitle: videoTitle,
     Views: 0,
-    Like: 0,
-    Dislike: 0,
+    Like: [],
+    Dislike: [],
   };
 
   const postCollection = await posts();
@@ -133,77 +133,85 @@ const addViews = async(videoId) => {
     return await getVideoByVideoID(videoId);   
 }
 
-// likeChange = 1 || -1
-const updateLikes = async(videoId, likeChange) => {
-    // check Input
-    await helpers.checkIsProperString(videoId);
-    await helpers.checkIsProperString(likeChange);
-    likeChange = helpers.isNumber(likeChange);
-    if (likeChange !== 1 && likeChange !== -1) {
-        throw `LikeChange should be 1 or -1`
-    }
-    if (!ObjectId.isValid(videoId)) throw "invalid object id";
-    videoId = videoId.trim();
+// like = true or false
+const updateLikes = async(userId, videoId, like, dislike) => {
+  // check Input
+  if(typeof like !=='boolean') throw 'like must be a boolean'
 
-    // get the stats of the video
-    let video = await getVideoByVideoID(videoId);
-    if (!video) {
-        throw `No video for this videoId`
-    }
+  if(typeof dislike !== 'boolean') throw 'dislike must be a boolean'
+  
+  if(like && dislike) throw "both like and dislike cannot be toggled at the same time"
+  
+  await helpers.checkIsProperString(videoId);
+  if (!ObjectId.isValid(videoId)) throw "invalid object id";
+  videoId = videoId.trim();
 
-    // update the stats(change likes)
-    const postCollection = await posts();
+  // get the video
+  let video = await getVideoByVideoID(videoId);
+  if (!video) throw `No video for this videoId`
+  
+
+  await helpers.checkIsProperString(userId);
+  if (!ObjectId.isValid(userId)) throw "invalid object id";
+  userId = userId.trim();
+
+  // get the channel
+  let channel = await userData.getChannelById(userId);
+  if (!channel) throw `No channel for this userId`
+  
+      
+  // update the stats(change likes)
+  const postCollection = await posts();
+  if(like && !dislike){
     const updatedInfo = await postCollection.updateOne(
-        {_id: ObjectId(videoId)},
-        {$set: 
-        {
-            Like: video.Like + likeChange
+      {_id: ObjectId(videoId)},
+      {$push: {
+        Like:userId
+        },
+      $pull: {
+        Dislike:userId
         }
-        }
+      }
     );
 
     if (updatedInfo.modifiedCount === 0) {
-        throw "could not update stats' like successfully"; 
+      throw 'could not update post successfully'; 
     }
-
-    return await getVideoByVideoID(videoId);   
-}
-
-
-// dislikeChange = 1 || -1
-const updateDislikes = async(videoId, dislikeChange) => {
-    // check Input
-    await helpers.checkIsProperString(videoId);
-    await helpers.checkIsProperString(dislikeChange);
-    dislikeChange = helpers.isNumber(dislikeChange);
-    if (dislikeChange !== 1 && dislikeChange !== -1) {
-        throw `dislikeChange should be 1 or -1`
-    }
-    if (!ObjectId.isValid(videoId)) throw "invalid object id";
-    videoId = videoId.trim();
-
-    // get the stats of the video
-    let video = await getVideoByVideoID(videoId);
-    if (!video) {
-        throw `No video for this videoId`
-    }
-
-    // update the stats(change likes)
-    const postCollection = await posts();
+  }
+  if(!like&&!dislike){
     const updatedInfo = await postCollection.updateOne(
-        {_id: ObjectId(videoId)},
-        {$set: 
-        {
-            Dislike: video.Dislike + dislikeChange
+      {_id: ObjectId(videoId)},
+      {$pull: {
+        Like:userId,
+        Dislike:userId
         }
-        }
+      }
     );
 
     if (updatedInfo.modifiedCount === 0) {
-        throw "could not update stats' dislike successfully"; 
+      throw 'could not update post successfully'; 
     }
-    return await getVideoByVideoID(videoId);
+  }
+  if(dislike && !like){
+    const updatedInfo = await postCollection.updateOne(
+      {_id: ObjectId(videoId)},
+      {$push: {
+         Dislike:userId
+        },
+        $pull: {
+         Like:userId
+        }
+      }
+    );
+
+    if (updatedInfo.modifiedCount === 0) {
+      throw 'could not update post successfully';  
+    }
+  }
+  let updatedVideo = await getVideoByVideoID(videoId)
+  return { numLikes: updatedVideo.Like.length, numDislikes: updatedVideo.Dislike.length}
 }
+
 
 module.exports = {
   getAllPosts,
@@ -216,6 +224,5 @@ module.exports = {
   getVideoByVideoID,
   getPopularVideos,
   addViews,
-  updateLikes,
-  updateDislikes
+  updateLikes
 };

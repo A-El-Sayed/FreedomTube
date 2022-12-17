@@ -12,7 +12,9 @@ const data = require("../data");
 const postData = data.posts;
 const userData = data.users;
 const statsData = data.stats;
+let helpers = require("../helper/validation");
 let s3 = require("../helper/s3");
+let {ObjectId} = require('mongodb');
 
 const { uploadFile, deleteFile, getObjectSignedUrl } = require("../helper/s3");
 
@@ -151,6 +153,43 @@ router.route("/searchvideo").post(async (req, res) => {
     }
   }
 });
+
+
+//likeUpdate
+router
+.route('/likeUpdate/:videoId')
+.post(async(req,res) => {
+    let videoId = req.params.videoId.trim();
+    const like = req.body.like;
+    const dislike = req.body.dislike;
+    
+    try {
+        if(typeof like !=='boolean') throw 'like must be a boolean'
+
+        if(typeof dislike !== 'boolean') throw 'dislike must be a boolean'
+        
+        if(like && dislike) throw "both like and dislike cannot be toggled at the same time"
+        
+        await helpers.checkIsProperString(videoId);
+        if (!ObjectId.isValid(videoId)) throw "invalid object id";
+        videoId = videoId.trim();
+
+        // get the video
+        let video = await postData.getVideoByVideoID(videoId);
+        if (!video) throw `No video for this videoId`
+        
+        let userId = (await userData.getChannelByUsername(req.session.user.username))._id.toString()
+      
+        let updatedCounter = (await postData.updateLikes(userId, videoId, like, dislike))
+        return res.json(updatedCounter)    
+    } catch(e) {
+        if (e === "both like and dislike cannot be toggled at the same time") {
+            return res.status(400).render('error', {error: e});
+        }
+    }
+    
+})
+
 
 module.exports = router;
 
