@@ -19,10 +19,10 @@ const createStat = async(videoId) => {
     }
 
     // get the videos's user
-    let user = await userData.getChannelByVideoId(videoId);
-    if (!user) {
-        throw `The user doesn't exist`;
-    }
+    // let user = await userData.getChannelByVideoId(videoId);
+    // if (!user) {
+    //     throw `The user doesn't exist`;
+    // }
 
     // create a new comment
     const statCollection = await statDb();

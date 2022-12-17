@@ -33,3 +33,22 @@
   border-width: 2px;
   border-style: solid;
 }
+
+.vLike{
+  border: 2px solid hotpink;
+  border-radius: 20%;
+}
+
+.vDislike{
+  border: 2px solid hotpink;
+  border-radius: 20%;
+}
+
+.like{
+  border: 2px solid hotpink;
+  border-radius: 20%;
+}
+.dislike{
+  border: 2px solid hotpink;
+  border-radius: 20%;
+}

@@ -4,8 +4,6 @@ let {ObjectId} = require('mongodb');
 let helpers = require("../helper/validation");
 const bcrypt = require('bcryptjs');
 const saltRounds = 16;
-const postData = require("./posts");
-
 
 const getChannelByS3Name = async (s3Name) => {
   
@@ -25,18 +23,6 @@ const getChannelByS3Name = async (s3Name) => {
     }else{
       return user;
     }
-};
-
-
-const getChannelByVideoId = async (videoId) => {
-
-    await helpers.checkIsProperString(videoId, "videoId");
-    if (!ObjectId.isValid(videoId)) throw "invalid object id";
-
-    let post = await postData.getVideoByVideoID(videoId)
-    return await getChannelByS3Name(post.s3Name)
-    
-
 };
 
 
@@ -483,7 +469,6 @@ module.exports = {
   getChannelByUsername,
   insertVideoToChannel,
   deleteVideoByS3Name,
-  getChannelByVideoId,
   insertVideoToHistory,
   updateUsername,
   updateSubscribersNum,
