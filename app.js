@@ -88,7 +88,23 @@ app.use('/protected', (req, res, next) => {
     }
   });
 
-
+  app.use('/subscribedChannel', (req, res, next) => {
+    if (!req.session.user) {
+      //not login
+      return res.status(403).render('./unprotected/forbiddenAccess');
+    } else {
+      next();
+    }
+  })
+  
+  app.use('/subscribedChannel/:channelId', (req, res, next) => {
+    if (!req.session.user) {
+      //not login
+      return res.status(403).render('./unprotected/forbiddenAccess');
+    } else {
+      next();
+    }
+  })
 
   app.use('/videoFeedRoutes', (req, res, next) => {
     if (!req.session.user) {

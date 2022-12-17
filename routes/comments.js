@@ -112,7 +112,7 @@ router
         if (e === "This comment doesn't exist") {
             return res.status(404).render('error', {error: e});
         } else if (e === 'could not add comment reply successfully')
-        return res.status(500).render('error', {error: e});
+            return res.status(500).render('error', {error: e});
         else {
             return res.status(400).render('error', {error: e});
         }

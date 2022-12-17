@@ -27,6 +27,7 @@ const insertPost = async (s3Name, videoTitle) => {
     Like: [],
     Dislike: [],
   };
+  await helpers.checkIsProperString(videoTitle);
 
   const postCollection = await posts();
   const insertInfo = await postCollection.insertOne(data);
