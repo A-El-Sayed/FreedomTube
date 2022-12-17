@@ -355,6 +355,121 @@ const deleteVideoByS3Name = async(
     } 
 }
 
+const updateSubscribersNum = async (id, subsChange) => {
+  // check the input
+  await helpers.checkIsProperString(id);
+  if (!ObjectId.isValid(id)) throw "invalid object id";
+
+  await helpers.checkIsProperString(subsChange);
+  await helpers.checkIsOnlyNum(subsChange);
+  subsChange = helpers.isNumber(subsChange);
+
+  // find this user
+  const userCollection = await users();
+  const user = await userCollection.findOne({_id: ObjectId(id)});
+  if (!user) throw 'No user with that id';
+
+  // add or minus number of subs
+  const updatedInfo = await userCollection.updateOne(
+    {_id: ObjectId(id)},
+    {$set: 
+      {
+        subscribers: user.subscribers + subsChange
+      }
+    }
+  );
+
+  if (updatedInfo.modifiedCount === 0) {
+    throw 'could not update channel subscribers successfully'; 
+  }
+
+  return await getChannelById(id); 
+
+}
+
+const addSubscribedChannel = async (id, subscribedChannelId) =>{
+  
+  // check the input
+  await helpers.checkIsProperString(id);
+  if (!ObjectId.isValid(id)) throw "invalid object id";
+  await helpers.checkIsProperString(subscribedChannelId);
+  if (!ObjectId.isValid(subscribedChannelId)) throw "invalid object id";
+
+  // find the channel
+  const userCollection = await users();
+  const user = await userCollection.findOne({_id: ObjectId(id)});
+  if (!user) throw 'No user with that id';
+
+  const subscribedChannel = await userCollection.findOne({_id: ObjectId(subscribedChannelId)});
+  if (!subscribedChannel) throw 'No subscribedChannel with that id';
+
+  // check if the two channel are the same
+  if (id == subscribedChannelId) {
+    throw `Cannot Subscribe Your Own Channel!`
+  }
+
+  // check if already subscribed
+  for (var i = 0; i < user.subscribedChannels.length; i++) {
+    if (user.subscribedChannels[i]._id.toString() == subscribedChannelId) {
+      throw `You have already subscribed this channel!`
+    }
+  }
+
+  // add Subscribed Channel
+  const updatedInfo = await userCollection.updateOne(
+    {_id: ObjectId(id)},
+    {$push: {
+      subscribedChannels: subscribedChannel
+      }
+    }
+  )
+
+  if (updatedInfo.modifiedCount === 0) {
+    throw 'could not add Subscribed Channel successfully'; 
+  }
+
+  // add one sub to the chennel subscribed to
+  updateSubscribersNum(subscribedChannelId, "1");
+
+  return await getChannelById(id); 
+}
+
+
+const removeSubscribedChannel = async(id, subscribedChannelId) => {
+  // check the input
+  await helpers.checkIsProperString(id);
+  if (!ObjectId.isValid(id)) throw "invalid object id";
+  await helpers.checkIsProperString(subscribedChannelId);
+  if (!ObjectId.isValid(subscribedChannelId)) throw "invalid object id";
+
+  // find the channel
+  const userCollection = await users();
+  const user = await userCollection.findOne({_id: ObjectId(id)});
+  if (!user) throw 'No user with that id';
+
+  const subscribedChanne = await userCollection.findOne({_id: ObjectId(subscribedChannelId)});
+  if (!subscribedChanne) throw 'No user with that id';
+
+
+  // remove Subscribed Channel
+  const updatedInfo = await userCollection.updateOne(
+    {_id: ObjectId(id)},
+    {
+      $pull: {subscribedChannels:{ _id: ObjectId(subscribedChannelId)}}
+    }
+  )
+
+  if (updatedInfo.modifiedCount === 0) {
+    throw 'could not remove Subscribed Channel successfully'; 
+  }
+
+  // add one sub to the chennel subscribed to
+  updateSubscribersNum(subscribedChannelId, "-1");
+
+  return await getChannelById(id); 
+}
+
+
 
 
 module.exports = {
@@ -370,5 +485,8 @@ module.exports = {
   deleteVideoByS3Name,
   getChannelByVideoId,
   insertVideoToHistory,
-  updateUsername
+  updateUsername,
+  updateSubscribersNum,
+  addSubscribedChannel,
+  removeSubscribedChannel
 };
