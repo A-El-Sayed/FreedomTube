@@ -49,6 +49,8 @@ router.get('/:watchVideoID', async(req, res) => {
     commentArray.sort(function(a, b) {
         return b.numLikes - a.numLikes;
       });
+    let channel = await userData.getChannelByS3Name(watchVideoID);
+    let channelId = channel._id.toString();
     res.render('./protected/watch', {
         _id: post._id.toString(),
         ...post,
