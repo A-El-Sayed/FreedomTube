@@ -2,9 +2,7 @@
     <a href="http://localhost:3000/videoFeedRoutes/">Home</a> |
     <a href="http://localhost:3000/videoFeedRoutes/upload">UPLOAD</a> |
     <a href="http://localhost:3000/videoFeedRoutes/popularVideos">POPULAR</a>|
-    <a href="http://localhost:3000/subscribedChannel">Subscribed Channels</a>|
     <a href="http://localhost:3000/videoFeedRoutes/history">HISTORY</a> |
-    <a href="http://localhost:3000/videoFeedRoutes/setting">SETTING</a> |
     <a href="http://localhost:3000/channel/delete">DELETE</a> |
     <a href="/logout">Logout</a>
     <form action="/api/posts/searchvideo" method="POST" class="search-video">
@@ -15,16 +13,16 @@
     <button type="submit">Submit</button>
   </form>
 </nav>
-<h1>{{title}}</h1> {{!--home--}}
 <main>
-    <ul>
-        {{#each video}}
-            <h2>{{videoTitle}}</h2>
-            <video width="320" height="240" controls> 
-                <source src={{imageUrl}} type="video/mp4">
-                <source src={{imageUrl}} type="video/ogg">
-                Your browser does not support the video tag.
-            </video>
-        {{/each}}
-    </ul>
+    <h1>Subscribed Channels</h1>
+    <ol>
+    {{#each channels}}
+        <li><h2>{{this.username}}</h2></li>
+            <ul>
+                {{#each this.videoInfo}}
+                <li><a href="/watch/{{this.s3Name}}">  <h2>{{this.videoTitle}}</a></li>
+                {{/each}}
+            </ul>
+    {{/each}} 
+    </ol>
 </main>

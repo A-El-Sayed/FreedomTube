@@ -5,7 +5,9 @@ const bcrypt = require('bcryptjs');
 const data = require('../data'); //the folder refers to the index.js
 const userData = data.users;
 const commentData = data.comments;
+const postData = data.posts;
 let helpers = require("../helper/validation");
+let {ObjectId} = require('mongodb');
 
 router
   .route('/')
@@ -132,5 +134,63 @@ router
     }
   
   })
+
+router.route('/subscribedChannel').get(async (req, res) => {
+  try {
+    let user = await userData.getChannelByUsername(req.session.user.username)
+    let subscribedChannels = user.subscribedChannels
+
+    if (subscribedChannels.length == 0) {
+      return res.render('error', {title: "No subsribed channel", class: "error", errors: "You don't have any subscribed channel!"})
+    }
+
+    for (var i = 0; i < subscribedChannels.length; i++) {
+      let oneChannel = subscribedChannels[i];
+      oneChannel['videoInfo'] = [];
+      // create a property to hold detailed video info
+     
+      for (var j = 0; j < (oneChannel.videosID).length; j++) {
+        oneChannel.videoInfo.push(await postData.getVideoByS3Name(oneChannel.videosID[j])); 
+      }
+      subscribedChannels[i] = oneChannel;
+    }
+
+    return res.render('protected/subscribedChannels', {title:"Subscribed Channel", channels: subscribedChannels});
+  }catch(e){
+    return res.status(500).render('error', {title: "sever error", class: "error", errors: e} )
+  }
+})
+
+// add new subscribedChannel
+router.route('/subscribedChannel/:channelId').get(async (req, res) => {
+  let channelId = req.params.channelId;
+  try {
+    await helpers.checkIsProperString(channelId)
+    if (!ObjectId.isValid(channelId)) throw "invalid object id";
+  } catch(e) {
+    return res.status(400).renderrender('protected/SubscribeInfo', {title: "Subscribe Error", Info: "Error", errors: e})
+  }
+
+  try {
+    let userId = (await userData.getChannelByUsername(req.session.user.username))._id.toString()
+    if (userId == channelId) {
+      throw `Can't subscribe to your own channel`
+    }
+    await userData.addSubscribedChannel(userId, channelId);
+    return res.render('protected/SubscribeInfo', {title: "Subscribe Successfully", Info: "Successfully!"});
+  } catch(e) {
+    if (e == `Can't subscribe to your own channel`) {
+      return res.status(400).render('protected/SubscribeInfo', {title: "Subscribe Error", Info: "Error", errors: e})
+    }
+    if (e == `You have already subscribed this channel!`) {
+      return res.status(400).render('protected/SubscribeInfo',{title: "Subscribe Error", Info: "Error", errors: e})
+    }
+    if (e == 'No subscribedChannel with that id') {
+      return res.status(404).render('protected/SubscribeInfo', {title: "Not Found Error", Info: "Error", errors: e} )
+    } else {
+      return res.status(500).render('error', {title: "sever error", class: "error", errors: e} )
+    }
+  }
+})
 
 module.exports = router;

@@ -2,6 +2,7 @@
     <a href="http://localhost:3000/videoFeedRoutes/">Home</a> |
     <a href="http://localhost:3000/videoFeedRoutes/upload">UPLOAD</a> |
     <a href="http://localhost:3000/videoFeedRoutes/popularVideos">POPULAR</a>|
+    <a href="http://localhost:3000/subscribedChannel">Subscribed Channels</a>|
     <a href="http://localhost:3000/videoFeedRoutes/history">HISTORY</a> |
     <a href="http://localhost:3000/channel/delete">DELETE</a> |
     <a href="/logout">Logout</a>
@@ -15,7 +16,9 @@
 </nav>
 <h1>{{title}}</h1> {{!--Watch--}}
 <div >
+    <h1>Channel Name: {{username}}</h1>
     <h2>{{videoTitle}}</h2>
+    
     <video width="320" height="240" controls> 
         <source src={{imageUrl}} type="video/mp4">
         <source src={{imageUrl}} type="video/ogg">
@@ -34,7 +37,8 @@
     <div id ='comment-area'>
         {{#each commentArray}} {{> comments }} {{/each}}
     </div>
-
+    <br>
+    <a href="http://localhost:3000/subscribedChannel/{{channelId}}">Subscribe to the channel to see more videos!</a>
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
         crossorigin="anonymous"></script>
     <script src="/public/js/basic_ajax_with_jquery.js"></script>
