@@ -4,6 +4,8 @@ const data = require('../data');
 const helpers = require('../helper/validation');
 const xss = require('xss');
 const channelData = data.users
+const helpers = require('../helper/validation');
+
 
 
 
@@ -14,9 +16,9 @@ router.route('/').get(async(req,res) => {
         const allChannels = await channelData.getAllChannels();
         console.log("Get all channels");
         console.log(allChannels);
-        res.render('channel/error', {title: 'error', error: e});
+        res.render('channel/error', {title: 'error', title: 'error', error: e});
     } catch(e) {
-        res.status(500).render('error', {title: 'error', error: e});
+        res.status(500).render('error', {title: 'error', title: 'error', error: e});
     }
     
 })
@@ -35,8 +37,8 @@ router.route('/delete')
         // res.render('./protected/logout'); //no idea why it is not rendering. I think it is because I need to refresh. Normally, you change route and then render. Here you render twice with the same endpoint /delete. We call "get" and "delete" on /delete
         res.redirect('../../logout')
         
-    }catch(error){
-        res.render('error', {title: 'error', error: error})
+    }catch(e){
+        res.render('error', {title: 'error', error: e})
     }
 })
 

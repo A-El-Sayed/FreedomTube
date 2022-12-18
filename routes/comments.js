@@ -20,7 +20,7 @@ router
         if (e === 'No comments with that channelId') {
             return res.status(404).render('protected/videoNotFound', {videoNameOrId: videoId});
         }
-        res.status(400).render('error', {error: e});
+        res.status(400).render('error', {title: 'error', error: e});
     }
 
     try {
@@ -55,9 +55,9 @@ router
             ...newComment}); // change render
     } catch(e) {
         if (e === 'Could not add new comments') {
-            return res.status(500).render('error', {error: e});
+            return res.status(500).render('error', {title: 'error', error: e});
         }
-        return res.status(404).render('error', {error: e});
+        return res.status(404).render('error', {title: 'error', error: e});
     }
 })
 
@@ -87,11 +87,11 @@ router
             Replies : returnComment.Replies  }); // change render
     } catch(e) {
         if (e === "This comment doesn't exist") {
-            return res.status(404).render('error', {error: e});
+            return res.status(404).render('error', {title: 'error', error: e});
         } else if (e === 'could not add comment reply successfully')
-        return res.status(500).render('error', {error: e});
+        return res.status(500).render('error', {title: 'error', error: e});
         else {
-            return res.status(400).render('error', {error: e});
+            return res.status(400).render('error', {title: 'error', error: e});
         }
     }
 })
@@ -113,11 +113,11 @@ router
             });
     } catch(e) {
         if (e === "This comment doesn't exist") {
-            return res.status(404).render('error', {error: e});
+            return res.status(404).render('error', {title: 'error', error: e});
         } else if (e === 'could not add comment reply successfully')
-        return res.status(500).render('error', {error: e});
+        return res.status(500).render('error', {title: 'error', error: e});
         else {
-            return res.status(400).render('error', {error: e});
+            return res.status(400).render('error', {title: 'error', error: e});
         }
     }
 })
@@ -139,11 +139,11 @@ router
             layout: null});
     } catch(e) {
         if (e === "This comment doesn't exist") {
-            return res.status(404).render('error', {error: e});
+            return res.status(404).render('error', {title: 'error', error: e});
         } else if (e === 'could not add comment reply successfully')
-            return res.status(500).render('error', {error: e});
+            return res.status(500).render('error', {title: 'error', error: e});
         else {
-            return res.status(400).render('error', {error: e});
+            return res.status(400).render('error', {title: 'error', error: e});
         }
     }
 })
@@ -177,7 +177,7 @@ router
         return res.json(updatedCounter)    
     } catch(e) {
         if (e === "both like and dislike cannot be toggled at the same time") {
-            return res.status(400).render('error', {error: e});
+            return res.status(400).render('error', {title: 'error', error: e});
         }
     }
     

@@ -32,6 +32,10 @@ const createUser = async (
   helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
   username = username.toLowerCase(); //make case insensitive
 
+  if(!(new RegExp(String.raw`[a-z]`)).test(username)){
+    throw("Username: Needs to be atleast 1 alphabet ")
+  }
+
   const userCollection = await users();
 
   const returnUser = await userCollection.findOne({username: username});
@@ -200,7 +204,7 @@ const insertVideoToHistory = async(
   
     const updatedInfo = await userCollection.updateOne(
         {_id: ObjectId(id)},
-        {$addToSet: {history : s3Name}}
+        {$push: {history : s3Name}}
       );
     if (updatedInfo.acknowledged !== true) {
       throw 'could not update channel successfully'; 
@@ -422,6 +426,61 @@ const addSubscribedChannel = async (id, subscribedChannelId) =>{
   return await getChannelById(id); 
 }
 
+const updateSubscribedChannel = async(channelId) => {
+
+  // check input
+  await helpers.checkIsProperString(channelId);
+  if (!ObjectId.isValid(channelId)) throw "invalid object id";
+
+  // find the channel
+  const userCollection = await users();
+  const user = await userCollection.findOne({_id: ObjectId(channelId)});
+  if (!user) throw 'No user with that id';
+
+  // all subscribed channels
+  let allChannels = []
+  allChannels = user.subscribedChannels
+
+
+  // update SubscribedChannel
+  for (var i = 0; i < allChannels.length; i++) {
+    let subscribedChannel = allChannels[i];
+
+    const newUser = await userCollection.findOne({_id: subscribedChannel._id});
+
+    // delete the channel if the subscribed channel was deleted
+    if (!newUser) {
+      const updatedInfo = await userCollection.updateOne(
+        {_id: ObjectId(channelId)},
+        {$pull: {
+            subscribedChannels: {_id : subscribedChannel._id}
+          }
+        }
+      )
+    } else{
+      // update 
+      const updatedInfo = await userCollection.updateOne(
+        { 
+          "subscribedChannels._id":  subscribedChannel._id
+      }, 
+      { 
+          "$set": { 
+            "subscribedChannels.$.username": newUser.username,
+            "subscribedChannels.$.password": newUser.password,
+            "subscribedChannels.$.subscribers": newUser.subscribers,
+            "subscribedChannels.$.totalViews":newUser.totalViews,
+            "subscribedChannels.$.videosID": newUser.videosID,
+            "subscribedChannels.$.subscribedChannels": newUser.subscribedChannels
+          }
+      }
+    )
+   }
+  }
+  return;
+}
+    
+  
+
 
 const removeSubscribedChannel = async(id, subscribedChannelId) => {
   // check the input
@@ -475,5 +534,6 @@ module.exports = {
   updateUsername,
   updateSubscribersNum,
   addSubscribedChannel,
-  removeSubscribedChannel
+  removeSubscribedChannel,
+  updateSubscribedChannel
 };

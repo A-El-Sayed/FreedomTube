@@ -157,10 +157,10 @@ if (myForm) {
         //finally, clear the textbox of submission and put blinking cursor on textInbox for the next input
         myForm.reset();
         textInput.focus();
-      }catch (error){
+      }catch (e){
         // 5. If there's a bad input, the form should not be submitted then show an error message describing to the user how to correct it
         // prevent default event
-        errorDOM(error)
+        errorDOM(e)
       }
     } else {
       //textinput is empty when client hit the submit

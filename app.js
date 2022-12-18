@@ -150,7 +150,7 @@ app.use('/protected', (req, res, next) => {
         await helpers.checkIsProperString(watchS3Name);
         s3 = watchS3Name
       } catch(e) {
-        return res.status(400).render('errors', {title: "Input Error", class: "error", errors: e} )
+        return res.status(400).render('error', {title: "Input Error", class: "error", error: e} )
       }
     
       // check the video exist
@@ -160,16 +160,16 @@ app.use('/protected', (req, res, next) => {
         videoId = videoId.toString();
       } catch(e) {
         if (e == 'No post with that s3name') {
-          return res.status(404).render('videosNotFound',{searchVideoName: "videoS3Name: " + s3})
+          return res.status(404).render('./protected/videosNotFound',{searchVideoName: "videoS3Name: " + s3})
         } else {
-          return res.status(500).render('error', {title: "Sever Error", class: "sever-error", errors: e});
+          return res.status(500).render('error', {title: "Sever Error", class: "sever-error", error: e});
         }
       }
       // check the user
       try{
         userId = (await getChannelByUsername(req.session.user.username))._id.toString()
       } catch(e){
-        return res.status(400).render('errors', {title: "Cookie username Error", class: "error", errors: e} )
+        return res.status(400).render('error', {title: "Cookie username Error", class: "error", error: e} )
       }
 
       // add view to this video

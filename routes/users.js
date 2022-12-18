@@ -58,8 +58,8 @@ router
 
         return res.status(500).json({error: "Internal Server Error"});
       }
-    } catch( error){
-      return res.status(400).render('./unprotected/userRegister', {error: error});
+    } catch( e){
+      return res.status(400).render('./unprotected/userRegister', {error: e});
 
     }
 
@@ -93,9 +93,9 @@ router
         //correct format for login but username and password not correct. 
         return res.status(400).render('./unprotected/userLogin', {error: "invalid username and/or password"});
       }    
-    } catch (error){
+    } catch (e){
       //error- from bad format of login. Activate from DB's throw
-      return res.status(400).render('./unprotected/userLogin', {error: error});
+      return res.status(400).render('./unprotected/userLogin', {error: e});
 
     }
   
@@ -136,22 +136,24 @@ router
       req.session.user = {username: username};
       return res.redirect('/');
     }catch(e){
-      return res.status(400).render('errors', {title: "Setting error", class: "error", errors: e} )
+      return res.status(400).render('error', {title: "Setting error", class: "error", error: e} )
     }
   
   })
 
 router.route('/subscribedChannel').get(async (req, res) => {
   try {
-    let user = await userData.getChannelByUsername(req.session.user.username)
+    let user = await userData.getChannelByUsername(req.session.user.username);
+    await userData.updateSubscribedChannel(user._id);
+    user = await userData.getChannelByUsername(req.session.user.username);
     let subscribedChannels = user.subscribedChannels
-
     if (subscribedChannels.length == 0) {
-      return res.status(404).render('error', {title: "No subsribed channel", class: "error", errors: "You don't have any subscribed channel!"})
+      return res.status(404).render('error', {title: "No subsribed channel", class: "error", error: "You don't have any subscribed channel!"})
     }
 
     for (var i = 0; i < subscribedChannels.length; i++) {
       let oneChannel = subscribedChannels[i];
+      oneChannel = await userData.getChannelById(oneChannel._id.toString());
       oneChannel['videoInfo'] = [];
       // create a property to hold detailed video info
      
@@ -163,7 +165,7 @@ router.route('/subscribedChannel').get(async (req, res) => {
 
     return res.render('protected/subscribedChannels', {title:"Subscribed Channel", channels: subscribedChannels});
   }catch(e){
-    return res.status(500).render('error', {title: "sever error", class: "error", errors: e} )
+    return res.status(500).render('error', {title: "sever error", class: "error", error: e} )
   }
 })
 
@@ -174,7 +176,7 @@ router.route('/subscribedChannel/:channelId').get(async (req, res) => {
     await helpers.checkIsProperString(channelId, "channelId")
     if (!ObjectId.isValid(channelId)) throw "invalid object id";
   } catch(e) {
-    return res.status(400).render('protected/SubscribeInfo', {title: "Subscribe Error", Info: "Error", errors: e})
+    return res.status(400).render('protected/SubscribeInfo', {title: "Subscribe Error", Info: "Error", error: e})
   }
 
   try {
@@ -186,15 +188,15 @@ router.route('/subscribedChannel/:channelId').get(async (req, res) => {
     return res.render('protected/SubscribeInfo', {title: "Subscribe Successfully", Info: "Successfully!"});
   } catch(e) {
     if (e == `Can't subscribe to your own channel`) {
-      return res.status(400).render('protected/SubscribeInfo', {title: "Subscribe Error", Info: "Error", errors: e})
+      return res.status(400).render('protected/SubscribeInfo', {title: "Subscribe Error", Info: "Error", error: e})
     }
     if (e == `You have already subscribed this channel!`) {
-      return res.status(400).render('protected/SubscribeInfo',{title: "Subscribe Error", Info: "Error", errors: e})
+      return res.status(400).render('protected/SubscribeInfo',{title: "Subscribe Error", Info: "Error", error: e})
     }
     if (e == 'No subscribedChannel with that id') {
-      return res.status(404).render('protected/SubscribeInfo', {title: "Not Found Error", Info: "Error", errors: e} )
+      return res.status(404).render('protected/SubscribeInfo', {title: "Not Found Error", Info: "Error", error: e} )
     } else {
-      return res.status(500).render('error', {title: "sever error", class: "error", errors: e} )
+      return res.status(500).render('error', {title: "sever error", class: "error", error: e} )
     }
   }
 })

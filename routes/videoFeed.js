@@ -40,7 +40,7 @@ router.route('/popularVideos').get(async (req, res) => {
     try {
         let popularVideos = await postData.getPopularVideos()
         if (popularVideos.length == 0) {
-            res.status(404).render('error', {errors: "No popular videos now",
+            res.status(404).render('error', {title: "error", error: "No popular videos now",
             title: "No Found Error",
             class: "error"})
         } else {
@@ -50,7 +50,7 @@ router.route('/popularVideos').get(async (req, res) => {
             })
         }
     } catch(e) {
-        return res.status(500).render('error', {error: e})
+        return res.status(500).render('error', {title: 'error', error: e})
     }  
 })
 
@@ -59,10 +59,20 @@ router.route('/history').get(async (req, res) => {
     try {
         let user = await channelData.getChannelByUsername(req.session.user.username)
         let historyS3Array = user.history
-        let history = await Promise.all(historyS3Array.map( async(s3Name) => {return await postData.getVideoByS3Name(s3Name)}))
+        let history = await Promise.all(historyS3Array.map( async(s3Name) => {
+            try{
+                return await postData.getVideoByS3Name(s3Name)
+            }catch(e){
+                if(e === "No post with that s3name"){
+                    return null
+                }else{
+                    throw e
+                }
+            }
+        }))
         history = history.reverse()
         if (history.length == 0) {
-            res.status(404).render('error', {errors: "No videos in history",
+            res.status(404).render('error', {error: "No videos in history",
             title: "No History Error",
             class: "error"})
         } else {
@@ -72,7 +82,7 @@ router.route('/history').get(async (req, res) => {
             })
         }
     } catch(e) {
-        return res.status(500).render('error', {error: e})
+        return res.status(500).render('error', {title: 'error', error: e})
     }  
 })
 

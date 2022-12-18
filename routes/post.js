@@ -129,7 +129,7 @@ router.route("/delete").delete(async (req, res) => {
   }
   userData.deleteVideoByS3Name(req.session.user.username, s3Name);
   postData.deleteVideoByS3Name(s3Name);
-  await s3.deleteFile(s3Name);
+  // await s3.deleteFile(s3Name);
   res.redirect("/videoFeedRoutes/upload");
 });
 
@@ -143,7 +143,7 @@ router.route("/searchvideo").post(async (req, res) => {
   if (errors.length > 0) {
     res.status(400).render("./error", {
       class: "error",
-      errors: errors,
+      error: errors,
       title: "Empty Input Error",
     });
   } else {
@@ -153,11 +153,16 @@ router.route("/searchvideo").post(async (req, res) => {
         video._id = video._id.toString();
       });
       console.log(vids);
+      if(vids.length === 0){
+        return res.status(404).render('./protected/videosNotFound', {searchVideoName: "videoTitle: " + videos.searchVideoName})
+      
+      };
       res.render("./protected/videosFoundbyName", {
         title: "Videos found",
         videos: vids,
         searchVideoName: searchVideoName,
       });
+      
     } catch (e) {
       res.status(404).render("./protected/videosNotFound", {
         title: "Videos not Found",
@@ -200,7 +205,7 @@ router
         return res.json(updatedCounter)    
     } catch(e) {
         if (e === "both like and dislike cannot be toggled at the same time") {
-            return res.status(400).render('error', {error: e});
+            return res.status(400).render('error', {title: 'error', error: e});
         }
     }
     

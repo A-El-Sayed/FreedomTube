@@ -17,7 +17,7 @@
 </nav>
 <h1>{{title}}</h1> {{!--Watch--}}
 <div >
-    <h1>Channel Name: {{username}}</h1>
+    <h1>Channel Name: {{username}}</h1> <a href="http://localhost:3000/subscribedChannel/{{channelId}}">Subscribe for more videos!</a>
     <h2>{{videoTitle}}</h2>
     
     <video width="320" height="240" controls> 
@@ -39,7 +39,7 @@
         {{#each commentArray}} {{> comments }} {{/each}}
     </div>
     <br>
-    <a href="http://localhost:3000/subscribedChannel/{{channelId}}">Subscribe to the channel to see more videos!</a>
+    
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
         crossorigin="anonymous"></script>
     <script src="/public/js/basic_ajax_with_jquery.js"></script>
