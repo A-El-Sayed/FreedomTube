@@ -32,6 +32,10 @@ const createUser = async (
   helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
   username = username.toLowerCase(); //make case insensitive
 
+  if(!(new RegExp(String.raw`[a-z]`)).test(username)){
+    throw("Username: Needs to be atleast 1 alphabet ")
+  }
+
   const userCollection = await users();
 
   const returnUser = await userCollection.findOne({username: username});
@@ -200,7 +204,7 @@ const insertVideoToHistory = async(
   
     const updatedInfo = await userCollection.updateOne(
         {_id: ObjectId(id)},
-        {$addToSet: {history : s3Name}}
+        {$push: {history : s3Name}}
       );
     if (updatedInfo.acknowledged !== true) {
       throw 'could not update channel successfully'; 

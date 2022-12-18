@@ -87,10 +87,12 @@ const getVideoByVideoID = async (videoId) => {
   };
   
 
-const searchVideobyName = async (videoTitle) => {
+const searchVideobyName = async (vidTitle) => {
     let posts = await getAllPosts();
-
-    var result = posts.filter(item => item.videoTitle.includes(videoTitle));
+    // posts.forEach(item => {
+    //   item.videoTitle = item.videoTitle.toLowerCase();
+    // });
+    var result = posts.filter(item => item.videoTitle.toLowerCase().includes(vidTitle.toLowerCase()));
 
     return result;
   

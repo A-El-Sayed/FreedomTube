@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const data = require('../data');
 const channelData = data.users
+const helpers = require('../helper/validation');
+
 
 
 
@@ -12,9 +14,9 @@ router.route('/').get(async(req,res) => {
         const allChannels = await channelData.getAllChannels();
         console.log("Get all channels");
         console.log(allChannels);
-        res.render('channel/error', {error: e});
+        res.render('channel/error', {title: 'error', error: e});
     } catch(e) {
-        res.status(500).render('error', {error: e});
+        res.status(500).render('error', {title: 'error', error: e});
     }
     
 })
@@ -32,18 +34,20 @@ router.route('/delete')
         // res.render('./protected/logout'); //no idea why it is not rendering. I think it is because I need to refresh. Normally, you change route and then render. Here you render twice with the same endpoint /delete. We call "get" and "delete" on /delete
         res.redirect('../../logout')
         
-    }catch(error){
-        res.render('error', {error: error})
+    }catch(e){
+        res.render('error', {title: 'error', error: e})
     }
 })
 
 
 // get channel by Id
 router.get('/:channelId', async(req, res) => {
-    const channelID = req.params.channelId.trim();
+    let channelID = req.params.channelId
 
     // check input
     try {
+        channelID = helpers.validateID(channelID)
+        channelID = channelID.trim()
         let result = await channelData.getChannelById(channelID);
         res.render('channel/channelFound', {
             username: result.username,
@@ -56,7 +60,7 @@ router.get('/:channelId', async(req, res) => {
         if (e === "No user with that id") {
             res.status(404).render('channel/channelNotFound', {searchChannel: channelID});
         }else{
-        res.status(500).render('error', {error: e});
+        res.status(500).render('error', {title: 'error', error: e});
     }}
 
 })
@@ -69,7 +73,7 @@ router.get('/:channelName', async(req, res) => {
     try {
         await channelData.getChannelByName(channelName);
     } catch(e) {
-        res.status(400).render('error', {error: e});
+        res.status(400).render('error', {title: 'error', error: e});
     }
 
     try {
@@ -80,7 +84,7 @@ router.get('/:channelName', async(req, res) => {
         }
         res.render('channel/channelNotFound', {channelData: result});
     } catch(e) {
-        res.status(500).render('error', {error: e});
+        res.status(500).render('error', {title: 'error', error: e});
     }
 
 })
@@ -107,7 +111,7 @@ router.route('/update/:id')
         res.render('channel/updatePage', {channelData: result});
 
     } catch(e) {
-        res.status(500).render('error', {error: e});
+        res.status(500).render('error', {title: 'error', error: e});
     }
     
 })
@@ -125,7 +129,7 @@ router.route('/update/:id')
 
     if (errors.length > 0) {
         res.render('channel/update', { // redirect to update page to ask correct input from user
-        errors: errors,
+        error: errors,
         hasErrors: true,
         updatedData: updatedData,
         });
@@ -136,7 +140,7 @@ router.route('/update/:id')
         const updatedChannel = await channelData.updatePost(updatedData.channelName, updatedData.email);
         res.redirect(`/channel/${updatedChannel._id}`);
     } catch (e) {
-        res.status(500).render('error', {error: e});
+        res.status(500).render('error', {title: 'error', error: e});
     }
     
 })

@@ -52,3 +52,14 @@
   border: 2px solid hotpink;
   border-radius: 20%;
 }
+
+.error {
+	color: red;
+	font-weight: bold;
+}
+
+.inputClass {
+	border: 3px solid red;
+
+	background-color: #eee;
+}

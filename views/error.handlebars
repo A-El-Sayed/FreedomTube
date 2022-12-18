@@ -2,7 +2,7 @@
 This page wil be rendered if the user does not input text into their form, make sure to give a response status code of 400 on the page, and render a valid HTML page with a paragraph class called 'error'; this paragraph should describe the error.
 }}
 <main>
-  {{#if errors}}
-    <p class={{class}}>{{errors}}</p>
+  {{#if error}}
+    <p class={{class}}>{{error}}</p>
   {{/if}}
 </main>
