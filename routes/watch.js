@@ -9,6 +9,8 @@ const data = require('../data');
 const channelData = data.users
 const postData = data.posts;
 const commentData = data.comments;
+const helpers = require('../helper/validation');
+const xss = require('xss');
 const userData = data.users;
 let helpers = require("../helper/validation");
 let {ObjectId} = require('mongodb');
@@ -17,7 +19,7 @@ router.get('/:watchVideoID', async(req, res) => {
     //s3?
     const watchVideoID = req.params.watchVideoID.trim();
     try{
-        helpers.checkIsProperString(watchVideoID)
+        helpers.checkIsProperString(watchVideoID, 'watchVideoID')
     }catch (e){
         return res.status(400).render('error', {title: 'error', error: e});
     }

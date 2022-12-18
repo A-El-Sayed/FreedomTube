@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const data = require('../data');
 const helpers = require('../helper/validation');
+const xss = require('xss');
 const commentData = data.comments;
 const userData = data.users;
 let {ObjectId} = require('mongodb');
@@ -10,10 +11,11 @@ let {ObjectId} = require('mongodb');
 router
 .route('/:videoId')
 .get(async(req,res) => {
-    const videoId = req.params.videoId.trim();
+    let videoId = req.params.videoId;
 
     try {
-        await commentData.getAllCommentsById(videoId);
+        videoId = helpers.validateID(videoId)
+        let allComment = await commentData.getAllCommentsById(videoId);
     } catch(e) {
         if (e === 'No comments with that channelId') {
             return res.status(404).render('protected/videoNotFound', {videoNameOrId: videoId});
@@ -30,12 +32,21 @@ router
 })
 // post new comment
 .post(async(req,res) => {
-    const input = req.body;  // content,like, dislike
-    const content = input.content;
-    const videoId = req.params.videoId.trim();
+    let content = xss(req.body.content);
+    let like = xss(req.body.like);
+    let dislike = xss(req.body.dislike);
+    let videoId = req.params.videoId.trim();
 
     try {
-        const newComment = await commentData.createComment(content, videoId, req.session.user.username);
+        await helpers.validateString(content, "content" );
+        like = helpers.validateIDArray(like);
+        dislike = helpers.validateIDArray(dislike);
+        videoId = helpers.validateID(videoId)
+    }catch(e) {
+        res.status(400).render('error', {error: e})
+    }
+    try{
+        const newComment = await commentData.createComment(content, like, dislike, videoId, req.session.user.username);
         console.log(newComment);
         return res.render('./protected/partials/comments',  {
             AddReply: false,
@@ -46,7 +57,7 @@ router
         if (e === 'Could not add new comments') {
             return res.status(500).render('error', {title: 'error', error: e});
         }
-        return res.status(400).render('error', {title: 'error', error: e});
+        return res.status(404).render('error', {title: 'error', error: e});
     }
 })
 
@@ -55,11 +66,20 @@ router
 .route('/comments/:commentId')
 // add reply to the comment
 .post(async(req,res) => {
-    const input = req.body;  // content,like, dislike
-    const content = input.content;
-    const commentId = req.params.commentId.trim();
+    // const input = req.body;  // content,like, dislike
+    // const content = input.content;
+    let content = xss(req.body.content);
+    let commentId = req.params.commentId.trim();
 
+    try{
+        helpers.validateString(content, 'content')
+        commentId = helpers.validateID(commentId);
+    }catch(e){
+        res.status(400).render('error', {error: e})
+    }
     try {
+        helpers.validateString(content, 'content')
+        commentId = helpers.validateID(commentId);
         const returnComment = await commentData.addReplyToComment(content, commentId, req.session.user.username);
         console.log(returnComment);
         return res.render('./protected/partials/replies',  {
@@ -79,6 +99,11 @@ router
 .get(async(req,res) => {
     const commentId = req.params.commentId.trim();
 
+    try{
+        commentId = helpers.validateID(commentId);
+    }catch(e) {
+        res.status(400).render('error', {error: e})
+    }
     try {
         const comment = await commentData.getCommentById(commentId);
         console.log(comment);
@@ -104,7 +129,11 @@ router
     const commentId = req.params.commentId.trim();
     
     const comment = await commentData.getCommentById(commentId);
-    
+    try{
+        commentId = helpers.validateID(commentId);
+    }catch(e) {
+        res.status(400).render('error', {error: e})
+    }
     try {
         return res.render('./protected/partials/replyForm',  {
             layout: null});
@@ -124,8 +153,8 @@ router
 .route('/likeUpdate/:commentId')
 .post(async(req,res) => {
     let commentId = req.params.commentId.trim();
-    const like = req.body.like;
-    const dislike = req.body.dislike;
+    const like = xss(req.body.like);
+    const dislike = xss(req.body.dislike);
     
     try {
         if(typeof like !=='boolean') throw 'like must be a boolean'

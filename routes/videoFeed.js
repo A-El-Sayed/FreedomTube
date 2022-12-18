@@ -6,6 +6,8 @@ const axios = require('axios');
 // const peopleData = data.people;
 const path = require('path');
 const data = require('../data');
+const helpers = require('../helper/validation');
+const xss = require('xss');
 const channelData = data.users
 const postData = data.posts;
 
@@ -15,6 +17,7 @@ router.route("/upload").get(async (req, res) => {
     let result = await channelData.getChannelByUsername(req.session.user.username.toLowerCase());
     let channelPosts = allPosts.data.filter(post => {return result.videosID.includes(post.s3Name)})
     res.render('./protected/upload', {
+        title: "Video Uploader",
         username: result.username,
         subscriber: result.subscribers.toString(),
         totalviews: result.totalViews.toString(),

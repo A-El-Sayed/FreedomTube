@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const data = require('../data');
+const helpers = require('../helper/validation');
+const xss = require('xss');
 const channelData = data.users
 const helpers = require('../helper/validation');
 
@@ -14,9 +16,9 @@ router.route('/').get(async(req,res) => {
         const allChannels = await channelData.getAllChannels();
         console.log("Get all channels");
         console.log(allChannels);
-        res.render('channel/error', {title: 'error', error: e});
+        res.render('channel/error', {title: 'error', title: 'error', error: e});
     } catch(e) {
-        res.status(500).render('error', {title: 'error', error: e});
+        res.status(500).render('error', {title: 'error', title: 'error', error: e});
     }
     
 })
@@ -24,7 +26,8 @@ router.route('/').get(async(req,res) => {
 router.route('/delete')
 .get(async (req, res) => {
     res.render('./protected/deleteChannel',{
-        username: req.session.user.username
+        username: req.session.user.username,
+        title: "Delete Channel"
     })
 })
 .delete(async (req, res) => {
@@ -38,113 +41,6 @@ router.route('/delete')
         res.render('error', {title: 'error', error: e})
     }
 })
-
-
-// get channel by Id
-router.get('/:channelId', async(req, res) => {
-    let channelID = req.params.channelId
-
-    // check input
-    try {
-        channelID = helpers.validateID(channelID)
-        channelID = channelID.trim()
-        let result = await channelData.getChannelById(channelID);
-        res.render('channel/channelFound', {
-            username: result.username,
-            subscriber: result.subscribers.toString(),
-            totalviews: result.totalViews.toString(),
-            subscribedChannels: result.subscribedChannels.toString(),
-            videosID: result.videosID.toString(),
-        });
-    } catch(e) {
-        if (e === "No user with that id") {
-            res.status(404).render('channel/channelNotFound', {searchChannel: channelID});
-        }else{
-        res.status(500).render('error', {title: 'error', error: e});
-    }}
-
-})
-
-// get channel by name
-router.get('/:channelName', async(req, res) => {
-    const channelName = req.params.channelName.trim();
-
-    // check input
-    try {
-        await channelData.getChannelByName(channelName);
-    } catch(e) {
-        res.status(400).render('error', {title: 'error', error: e});
-    }
-
-    try {
-        let result = await channelData.getChannelByName(channelName);
-        if (!result) {
-            res.status(404).render('channelNotFound', {searchChannel: channelName});
-            return;
-        }
-        res.render('channel/channelNotFound', {channelData: result});
-    } catch(e) {
-        res.status(500).render('error', {title: 'error', error: e});
-    }
-
-})
-
-//update a channel
-router.route('/update/:id')
-.get(async(req, res) => {
-
-    // check Id
-    try {
-        let result = await channelData.getChannelById(req.params.id.trim())
-    } catch(e) {
-        res.status(404).render('channelNotFound', {searchChannel: channelId})
-    }
-    res.render('channel/update', {channelData: result})
-
-    // check the channel exist
-    try {
-        let result = await channelData.getChannelById(req.params.id.trim())
-        if (!result) {
-            res.status(404).render('channelNotFound', {searchChannel: channelID});
-            return;
-        }
-        res.render('channel/updatePage', {channelData: result});
-
-    } catch(e) {
-        res.status(500).render('error', {title: 'error', error: e});
-    }
-    
-})
-.put(async (req, res) => {
-    let updatedData = req.body;
-    let errors = [];
-
-    if (!updatedData.channelName) {
-        errors.push('No channelName provided');
-    }
-
-    if (!updatedData.email) {
-        errors.push('No email provided');
-    }
-
-    if (errors.length > 0) {
-        res.render('channel/update', { // redirect to update page to ask correct input from user
-        error: errors,
-        hasErrors: true,
-        updatedData: updatedData,
-        });
-        return;
-    }
-    
-    try {
-        const updatedChannel = await channelData.updatePost(updatedData.channelName, updatedData.email);
-        res.redirect(`/channel/${updatedChannel._id}`);
-    } catch (e) {
-        res.status(500).render('error', {title: 'error', error: e});
-    }
-    
-})
-
 
 
 module.exports = router;
