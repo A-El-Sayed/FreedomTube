@@ -328,6 +328,8 @@ const deleteVideoByS3Name = async(
   username,
   s3Name
 ) => {
+  helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
+  await helpers.validateString("s3Name", s3Name, String.raw`^[a-z0-9]*$`, "Must be lowercase and numbers");
   const userCollection = await users();
   const user = await userCollection.findOne({username: username});
   if (user === null) throw 'No user with that id';

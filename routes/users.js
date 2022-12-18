@@ -7,6 +7,7 @@ const userData = data.users;
 const commentData = data.comments;
 const postData = data.posts;
 let helpers = require("../helper/validation");
+const xss = require('xss');
 let {ObjectId} = require('mongodb');
 
 router
@@ -34,7 +35,9 @@ router
   })
   .post(async (req, res) => {
     //code here for POST
-    let { usernameInput, passwordInput} = req.body;
+    // let { usernameInput, passwordInput} = req.body;
+    let usernameInput = xss(req.body.usernameInput)
+    let passwordInput = xss(req.body.passwordInput)
     try {
       helpers.validateString("username", usernameInput, String.raw`^[A-Za-z0-9]{4,}$`, "Only alphanumeric characters and should be atleast 4 characters long")
       helpers.validateString("password", passwordInput, String.raw`^[A-Za-z0-9\+\*\?\^\$\\\.\[\]\{\}\(\)\|\/\<\>\-\&\%\_\!]{6,}$`, "No spaces but can be any characters including special characters and should be atleast 6 characters long")
@@ -67,7 +70,9 @@ router
   .route('/login')
   .post(async (req, res) => {
     //code here for POST
-    let { usernameInput, passwordInput} = req.body;
+    // let { usernameInput, passwordInput} = req.body;
+    let usernameInput = xss(req.body.usernameInput)
+    let passwordInput = xss(req.body.passwordInput)
     try {
       helpers.validateString("username", usernameInput, String.raw`^[A-Za-z0-9]{4,}$`, "Only alphanumeric characters and should be atleast 4 characters long")
       helpers.validateString("password", passwordInput, String.raw`^[A-Za-z0-9\+\*\?\^\$\\\.\[\]\{\}\(\)\|\/\<\>\-\&\%\_\!]{6,}$`, "No spaces but can be any characters including special characters and should be atleast 6 characters long")
@@ -120,7 +125,8 @@ router
   .route('/setting')
   .post(async (req, res) => {
     //code here for POST
-    let { username } = req.body;
+    // let { username } = req.body;
+    let username = xss(req.body.username);
     try {
       helpers.validateString("username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Only alphanumeric characters and should be atleast 4 characters long")
       username = username.toLowerCase();
@@ -141,7 +147,7 @@ router.route('/subscribedChannel').get(async (req, res) => {
     let subscribedChannels = user.subscribedChannels
 
     if (subscribedChannels.length == 0) {
-      return res.render('error', {title: "No subsribed channel", class: "error", errors: "You don't have any subscribed channel!"})
+      return res.status(404).render('error', {title: "No subsribed channel", class: "error", errors: "You don't have any subscribed channel!"})
     }
 
     for (var i = 0; i < subscribedChannels.length; i++) {
@@ -165,7 +171,7 @@ router.route('/subscribedChannel').get(async (req, res) => {
 router.route('/subscribedChannel/:channelId').get(async (req, res) => {
   let channelId = req.params.channelId;
   try {
-    await helpers.checkIsProperString(channelId)
+    await helpers.checkIsProperString(channelId, "channelId")
     if (!ObjectId.isValid(channelId)) throw "invalid object id";
   } catch(e) {
     return res.status(400).renderrender('protected/SubscribeInfo', {title: "Subscribe Error", Info: "Error", errors: e})

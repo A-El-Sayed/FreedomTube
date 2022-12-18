@@ -8,7 +8,7 @@
     <a href="http://localhost:3000/channel/delete">DELETE</a> |
     <a href="/logout">Logout</a>
     <form action="/api/posts/searchvideo" method="POST" class="search-video">
-    <label for="search-for-person">
+    <label for="search-for-video">
       Search
       <input type="text" name="searchVideoName" id="search-for-video" placeholder="Video Title" />
     </label>
@@ -17,14 +17,12 @@
 </nav>
 <h1>{{title}}</h1> {{!--home--}}
 <main>
-    <ul>
         {{#each video}}
-            <h2>{{videoTitle}}</h2>
+            <a href="/watch/{{s3Name}}"> <h2>{{videoTitle}}</h2></a>
             <video width="320" height="240" controls> 
                 <source src={{imageUrl}} type="video/mp4">
                 <source src={{imageUrl}} type="video/ogg">
                 Your browser does not support the video tag.
             </video>
         {{/each}}
-    </ul>
 </main>

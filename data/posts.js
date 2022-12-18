@@ -12,6 +12,7 @@ const getAllPosts = async () => {
 };
 
 const getVideosByUser = async (username) => {
+  helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
   const postCollection = await posts();
   const postsArray = await postCollection
     .find({ username: username.toLowerCase() })
@@ -20,6 +21,9 @@ const getVideosByUser = async (username) => {
 };
 
 const insertPost = async (s3Name, videoTitle) => {
+  await helpers.validateString("s3Name", s3Name, String.raw`^[a-z0-9]*$`, "Must be lowercase and numbers");
+  await helpers.checkIsProperString(s3Name, "s3Name");
+  await helpers.checkIsProperString(videoTitle, "videoTitle");
   let data = {
     s3Name: s3Name,
     videoTitle: videoTitle,
@@ -31,9 +35,14 @@ const insertPost = async (s3Name, videoTitle) => {
 
   const postCollection = await posts();
   const insertInfo = await postCollection.insertOne(data);
+  if (!insertInfo.acknowledged || !insertInfo.insertedId)
+  throw 'Could not add post';
 };
 
 const renamePost = async (s3Name, videoTitle) => {
+  await helpers.validateString("s3Name", s3Name, String.raw`^[a-z0-9]*$`, "Must be lowercase and numbers");
+  await helpers.checkIsProperString(s3Name, "s3Name");
+  await helpers.checkIsProperString(videoTitle, "videoTitle");
   const postCollection = await posts();
   const user = await postCollection.findOne({ s3Name: s3Name });
   if (user === null) throw "No user with that id";
@@ -55,6 +64,8 @@ const renamePost = async (s3Name, videoTitle) => {
 
 //Function to list person matching the id
 const deleteVideoByS3Name = async (s3Name) => {
+  await helpers.validateString("s3Name", s3Name, String.raw`^[a-z0-9]*$`, "Must be lowercase and numbers");
+  await helpers.checkIsProperString(s3Name, "s3Name");
   const postCollection = await posts();
   const deletionInfo = await postCollection.deleteOne({ s3Name: s3Name });
 

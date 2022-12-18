@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const data = require('../data');
+const helpers = require('../helper/validation');
+const xss = require('xss');
 const channelData = data.users
 
 
@@ -22,7 +24,8 @@ router.route('/').get(async(req,res) => {
 router.route('/delete')
 .get(async (req, res) => {
     res.render('./protected/deleteChannel',{
-        username: req.session.user.username
+        username: req.session.user.username,
+        title: "Delete Channel"
     })
 })
 .delete(async (req, res) => {
@@ -40,11 +43,17 @@ router.route('/delete')
 
 // get channel by Id
 router.get('/:channelId', async(req, res) => {
-    const channelID = req.params.channelId.trim();
+    const channelID = xss(req.params.channelId);
 
     // check input
     try {
+        let channelID =helpers.validateID(channelID)
         let result = await channelData.getChannelById(channelID);
+        // helpers.validateString("Username", result.username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
+        // helpers.validateInt("Subscribers", result.subscribers, 0, 100000000)
+        // helpers.validateInt("Total Views", result.totalViews, 0, 100000000)
+        // helpers.validateIDArray(result.subscribedChannels);
+        // helpers.validateIDArray(result.videosID);
         res.render('channel/channelFound', {
             username: result.username,
             subscriber: result.subscribers.toString(),

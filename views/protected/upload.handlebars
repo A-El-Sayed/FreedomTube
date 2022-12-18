@@ -2,11 +2,13 @@
     <a href="http://localhost:3000/videoFeedRoutes/">Home</a> |
     <a href="http://localhost:3000/videoFeedRoutes/upload">UPLOAD</a> |
     <a href="http://localhost:3000/videoFeedRoutes/popularVideos">POPULAR</a>|
+    <a href="http://localhost:3000/subscribedChannel">Subscribed Channels</a>|
     <a href="http://localhost:3000/videoFeedRoutes/history">HISTORY</a> |
+    <a href="http://localhost:3000/videoFeedRoutes/setting">SETTING</a> |
     <a href="http://localhost:3000/channel/delete">DELETE</a> |
     <a href="/logout">Logout</a>
     <form action="/api/posts/searchvideo" method="POST" class="search-video">
-    <label for="search-for-person">
+    <label for="search-for-video">
       Search
       <input type="text" name="searchVideoName" id="search-for-video" placeholder="Video Title" />
     </label>
@@ -15,7 +17,7 @@
 </nav>
 <h1>{{title}}</h1> {{!--Video Uploader--}}
 <main>
-    <p>This site finds people in stevens institute of tech. It allows you to get their personal details </p>
+    <p>Please upload a video and insert its title!</p>
     <form method = "POST" action="/api/posts" enctype="multipart/form-data">
         
         <label for="videoUploader"> Upload Video:  </label>
@@ -44,8 +46,8 @@
         <h2>{{videoTitle}}</h2>
         <form method = "POST" action="/api/posts/changeName">
             <input type="hidden" name="s3Name" value={{s3Name}}>
-            <label for="videoTitle"> Rename Title:  </label>
-            <input type="text" name="videoTitle" id="videoTitle">
+            <label for="renamedTitle"> Rename Title:  </label>
+            <input type="text" name="renamedTitle" id="renamedTitle">
             <button type="submit">Submit</button>
         </form>
 

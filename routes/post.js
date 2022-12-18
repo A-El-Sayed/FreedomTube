@@ -12,7 +12,8 @@ const data = require("../data");
 const postData = data.posts;
 const userData = data.users;
 const statsData = data.stats;
-let helpers = require("../helper/validation");
+const helpers = require('../helper/validation');
+const xss = require('xss');
 let s3 = require("../helper/s3");
 let {ObjectId} = require('mongodb');
 
@@ -66,7 +67,7 @@ router
   })
   .post(uploadMiddleware, async (req, res) => {
     const file = req.file;
-    const videoTitle = req.body.videoTitle;
+    const videoTitle = xss(req.body.videoTitle);
     const s3Name = generateFileName();
 
     console.log(file);
@@ -97,16 +98,28 @@ router
   });
 
 router.route("/changeName").post(async (req, res) => {
-  const s3Name = req.body.s3Name;
-  const videoTitle = req.body.videoTitle;
+  const s3Name = xss(req.body.s3Name);
+  const videoTitle = xss(req.body.renamedTitle);
+  try{
+    await helpers.validateString("s3Name", s3Name, String.raw`^[a-z0-9]*$`, "Must be lowercase and numbers");
+    await helpers.checkIsProperString(s3Name, "s3Name");
+    await helpers.checkIsProperString(videoTitle, "videoTitle");
+  }catch(e) {
+    res.status(400).render('error', {error: e});
+  }
   // s3Name = "acd5b0265ee7331f6466771ef2fedfd0599fc0b50cbbb626bd6311324945e5ec"
   postData.renamePost(s3Name, videoTitle);
   res.redirect("/videoFeedRoutes/upload");
 });
 
 router.route("/delete").delete(async (req, res) => {
-  const s3Name = req.body.s3Name;
+  s3Name = xss(req.body.s3Name);
   // s3Name = "acd5b0265ee7331f6466771ef2fedfd0599fc0b50cbbb626bd6311324945e5ec"
+  try{
+    await helpers.validateString("s3Name", s3Name, String.raw`^[a-z0-9]*$`, "Must be lowercase and numbers");
+  }catch (e) {
+    res.status(400).render('error', {error: e});
+  }
   userData.deleteVideoByS3Name(req.session.user.username, s3Name);
   postData.deleteVideoByS3Name(s3Name);
   await s3.deleteFile(s3Name);
@@ -115,40 +128,33 @@ router.route("/delete").delete(async (req, res) => {
 
 router.route("/searchvideo").post(async (req, res) => {
   let errors = [];
-  let videos = req.body;
-  console.log(videos.searchVideoName)
-  if (!videos.searchVideoName || videos.searchVideoName.length === 0) {
+  let searchVideoName = xss(req.body.searchVideoName);
+  // console.log(videos.searchVideoName)
+  if  (!searchVideoName || searchVideoName.length === 0){
     errors.push("Please enter a name to search for.");
   }
   if (errors.length > 0) {
-    res.render("./error", {
+    res.status(400).render("./error", {
       class: "error",
       errors: errors,
       title: "Empty Input Error",
     });
   } else {
     try {
-      let vids = await postData.searchVideobyName(videos.searchVideoName);
+      let vids = await postData.searchVideobyName(searchVideoName);
       vids.forEach(video => {
         video._id = video._id.toString();
       });
-      // // let userObj = await userData.getChannelByS3Name("0e45d170b6b5c14f7acaf7fe57ae6d2d7b9a448c81ecefa97390292a7a7f7dea");
-      // vids = await Promise.all(vids.map(async (element) => {
-      //   let returnObj = element;
-      //   let userObj = await userData.getChannelByS3Name(returnObj.s3Name)
-      //   returnObj.username = userObj.username
-      //   return returnObj
-      // }));
       console.log(vids);
       res.render("./protected/videosFoundbyName", {
         title: "Videos found",
         videos: vids,
-        searchVideoName: videos.searchVideoName,
+        searchVideoName: searchVideoName,
       });
     } catch (e) {
-      res.render("./protected/videosNotFound", {
+      res.status(404).render("./protected/videosNotFound", {
         title: "Videos not Found",
-        searchVideoName: videos.searchVideoName,
+        searchVideoName: searchVideoName,
       });
     }
   }
@@ -160,8 +166,8 @@ router
 .route('/likeUpdate/:videoId')
 .post(async(req,res) => {
     let videoId = req.params.videoId.trim();
-    const like = req.body.like;
-    const dislike = req.body.dislike;
+    const like = xss(req.body.like);
+    const dislike = xss(req.body.dislike);
     
     try {
         if(typeof like !=='boolean') throw 'like must be a boolean'
@@ -170,10 +176,13 @@ router
         
         if(like && dislike) throw "both like and dislike cannot be toggled at the same time"
         
-        await helpers.checkIsProperString(videoId);
+        await helpers.checkIsProperString(videoId, "videoId");
         if (!ObjectId.isValid(videoId)) throw "invalid object id";
         videoId = videoId.trim();
-
+    } catch(e) {
+      res.status(400).render('error', {error: e});
+    }
+    try{
         // get the video
         let video = await postData.getVideoByVideoID(videoId);
         if (!video) throw `No video for this videoId`
