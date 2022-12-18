@@ -9,12 +9,19 @@ const data = require('../data');
 const channelData = data.users
 const postData = data.posts;
 const commentData = data.comments;
+const helpers = require('../helper/validation');
+const xss = require('xss');
 const userData = data.users;
 let {ObjectId} = require('mongodb');
 
 router.get('/:watchVideoID', async(req, res) => {
     //s3?
     const watchVideoID = req.params.watchVideoID.trim();
+    try{
+        helpers.checkIsProperString(watchVideoID, 'watchVideoID');
+    } catch(e) {
+        res.status(400).render('error', {error: e});
+    }
     let post = await postData.getVideoByS3Name(watchVideoID);
     let username = (await userData.getChannelByS3Name(watchVideoID)).username;
     let urlMaps = (await axios.get("http://localhost:3000/api/posts")).data;

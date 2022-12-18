@@ -69,6 +69,13 @@ router
     const file = req.file;
     const videoTitle = xss(req.body.videoTitle);
     const s3Name = generateFileName();
+    try{
+      await helpers.checkIsProperString(videoTitle, "videoTitle");
+    }catch(e){
+      res.status(400).render('error', {error: e});
+    }
+
+
 
     console.log(file);
 

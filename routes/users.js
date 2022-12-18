@@ -174,7 +174,7 @@ router.route('/subscribedChannel/:channelId').get(async (req, res) => {
     await helpers.checkIsProperString(channelId, "channelId")
     if (!ObjectId.isValid(channelId)) throw "invalid object id";
   } catch(e) {
-    return res.status(400).renderrender('protected/SubscribeInfo', {title: "Subscribe Error", Info: "Error", errors: e})
+    return res.status(400).render('protected/SubscribeInfo', {title: "Subscribe Error", Info: "Error", errors: e})
   }
 
   try {

@@ -5,6 +5,7 @@ const stats = require('./data/videoStat');
 const userData = require('./data/users');
 const postData = require('./data/posts');
 const helpers = require('./helper/validation');
+const xss = require('xss');
 const configRoutes = require('./routes');
 
 const session = require('express-session');
@@ -62,17 +63,18 @@ app.use(session({
 
   // Convert post to delete method
   app.use('/channel/delete', (req, res, next) => {
-    let updatedData = req.body;
-    if (req.method == 'POST' && updatedData._method){
-      req.method = updatedData._method
+    let method = xss(req.body._method);
+
+    if (req.method == 'POST' && method){
+      req.method = method
     }
     next();
   });
 
   app.use('/api/posts/delete', (req, res, next) => {
-    let updatedData = req.body;
-    if (req.method == 'POST' && updatedData._method){
-      req.method = updatedData._method
+    let method = xss(req.body._method);
+    if (req.method == 'POST' && method){
+      req.method = method
     }
     next();
   });
