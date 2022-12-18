@@ -14,9 +14,9 @@ router.route('/').get(async(req,res) => {
         const allChannels = await channelData.getAllChannels();
         console.log("Get all channels");
         console.log(allChannels);
-        res.render('channel/error', {error: e});
+        res.render('channel/error', {title: 'error', error: e});
     } catch(e) {
-        res.status(500).render('error', {error: e});
+        res.status(500).render('error', {title: 'error', error: e});
     }
     
 })
@@ -36,7 +36,7 @@ router.route('/delete')
         res.redirect('../../logout')
         
     }catch(error){
-        res.render('error', {error: error})
+        res.render('error', {title: 'error', error: error})
     }
 })
 
