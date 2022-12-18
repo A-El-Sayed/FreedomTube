@@ -137,15 +137,17 @@ router
 
 router.route('/subscribedChannel').get(async (req, res) => {
   try {
-    let user = await userData.getChannelByUsername(req.session.user.username)
+    let user = await userData.getChannelByUsername(req.session.user.username);
+    await userData.updateSubscribedChannel(user._id);
+    user = await userData.getChannelByUsername(req.session.user.username);
     let subscribedChannels = user.subscribedChannels
-
     if (subscribedChannels.length == 0) {
       return res.render('error', {title: "No subsribed channel", class: "error", errors: "You don't have any subscribed channel!"})
     }
 
     for (var i = 0; i < subscribedChannels.length; i++) {
       let oneChannel = subscribedChannels[i];
+      oneChannel = await userData.getChannelById(oneChannel._id.toString());
       oneChannel['videoInfo'] = [];
       // create a property to hold detailed video info
      
