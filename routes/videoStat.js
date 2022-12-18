@@ -18,7 +18,7 @@ router.route('/:videoId')
         if (e === 'No stats with that videoId') {
             return res.status(404).render('protected/statsNotFound');
         }
-        res.status(400).render('error', {error: e});
+        res.status(400).render('error', {title: 'error', error: e});
     }
 
     try {
