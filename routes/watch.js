@@ -12,7 +12,6 @@ const commentData = data.comments;
 const helpers = require('../helper/validation');
 const xss = require('xss');
 const userData = data.users;
-let helpers = require("../helper/validation");
 let {ObjectId} = require('mongodb');
 
 router.get('/:watchVideoID', async(req, res) => {

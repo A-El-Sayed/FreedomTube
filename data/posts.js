@@ -12,7 +12,7 @@ const getAllPosts = async () => {
 };
 
 const getVideosByUser = async (username) => {
-  helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
+  await helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
   const postCollection = await posts();
   const postsArray = await postCollection
     .find({ username: username.toLowerCase() })

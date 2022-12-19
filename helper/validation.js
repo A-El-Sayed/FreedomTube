@@ -57,7 +57,7 @@ let validateIDArray = (input) => {
 
 // these validation do not return value;
 
-let validateString = async (parameterName, input, regex = "^.*$", errorMessage) => {
+let validateString = (parameterName, input, regex = "^.*$", errorMessage) => {
     if (!input) throw `${parameterName} is missing an input`
     if (typeof input !== 'string') throw `${parameterName} must be a string`
     if (input.trim().length === 0) throw `${parameterName} Cannot be an empty string or string with just spaces`
@@ -69,7 +69,7 @@ let validateString = async (parameterName, input, regex = "^.*$", errorMessage) 
 }
 
 
-async function checkIsProperString(str,strName){
+function checkIsProperString(str,strName){
     if(typeof str !== 'string' || str === null || str=== undefined){
         throw `${strName || 'provided variable'} should be string`;
     }
@@ -78,7 +78,7 @@ async function checkIsProperString(str,strName){
     }
 }
 
-async function checkIsLetterOrNum(str,strName){
+function checkIsLetterOrNum(str,strName){
     for (var i=0;i<str.length;i++) {
         var asc = str.charCodeAt(i);
         if (!(asc >= 65 && asc <= 90 || asc >= 97 && asc <= 122 || asc>=48 && asc<=57)) {
@@ -88,7 +88,7 @@ async function checkIsLetterOrNum(str,strName){
 
 }
 
-async function checkIsOnlyLetter(str,strName){
+function checkIsOnlyLetter(str,strName){
     for (var i=0;i<str.length;i++) {
         var asc = str.charCodeAt(i);
         if (!(asc >= 65 && asc <= 90 || asc >= 97 && asc <= 122)) {
@@ -100,8 +100,8 @@ async function checkIsOnlyLetter(str,strName){
 
 // check the person Name in regular way (Format: FirstName + LastName)
 async function checkIsProperName(str,strName){
-    await checkIsProperString(str,strName);
-    await checkIsOnlyLetter(str.replace(/ /g, ""),strName);
+    checkIsProperString(str,strName);
+    checkIsOnlyLetter(str.replace(/ /g, ""),strName);
     //check is only one space
     let trimString = str.trim().replace(/ /g, "");
     if(str.length-trimString.length!==1){
@@ -114,8 +114,8 @@ async function checkIsProperName(str,strName){
     }
     for(var i = 0; i<nameArr.length;i++){
         var nameStr = nameArr[i];
-        await checkIsProperString(nameStr,"first or last name");
-        await checkIsOnlyLetter(nameStr,"first or last name");
+        checkIsProperString(nameStr,"first or last name");
+        checkIsOnlyLetter(nameStr,"first or last name");
         if(nameStr.length<2){
             throw `first or last name must at least be 3 characters long`;
         }
@@ -126,7 +126,7 @@ async function checkIsProperName(str,strName){
 
 }
 
-async function checkIsOnlyNum(numStr,name){
+function checkIsOnlyNum(numStr,name){
     for (var i=0;i<numStr.length;i++) {
         var asc = numStr.charCodeAt(i);
         if (!(asc>=48 && asc<=57)) {
@@ -137,7 +137,7 @@ async function checkIsOnlyNum(numStr,name){
 
 // Data format: 03/12/2022;
 async function checkIsProperDate(date){
-    await checkIsProperString(date,"date");
+    checkIsProperString(date,"date");
     dateArr = date.split("/");
     if(dateArr.length !== 3||dateArr[0].length!=2||dateArr[1].length!=2||dateArr[2].length!=4){
         throw `provided date format is not valid`;
@@ -145,15 +145,15 @@ async function checkIsProperDate(date){
     let month = dateArr[0];
     let day = dateArr[1];
     let year = dateArr[2];
-    await checkIsProperString(month,"month");
-    await checkIsOnlyNum(month,"month");
+    checkIsProperString(month,"month");
+    checkIsOnlyNum(month,"month");
     let intMonth = parseInt(month);
     if(intMonth<0 || intMonth>12){
         throw `provided month is not valid`;
     }
     
-    await checkIsProperString(day,"day");
-    await checkIsOnlyNum(day,"day");
+    checkIsProperString(day,"day");
+    checkIsOnlyNum(day,"day");
     let intDay = parseInt(day);
     if(intMonth==2){
         if(intDay<1 || intDay>28){
@@ -171,8 +171,8 @@ async function checkIsProperDate(date){
         }
     }
     
-    await checkIsProperString(year,"year");
-    await checkIsOnlyNum(year,"year");
+    checkIsProperString(year,"year");
+    checkIsOnlyNum(year,"year");
     let intYear = parseInt(year);
     var nowDate = new Date();
     if(intYear<1900||intYear>nowDate.getFullYear()+2){

@@ -286,7 +286,7 @@ const deleteReply = async(replyId) => {
 const updateUsername = async(userId, username) => {
    userId = helpers.validateID(userId);
 
-    helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
+    await helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
     username = username.toLowerCase(); //make case insensitive
 
     const commentsCollection = await comments();

@@ -15,19 +15,16 @@ router
 
     try {
         videoId = helpers.validateID(videoId)
+    }catch(e){
+        return res.status(400).render('error', {title: 'error', error: e});
+    }
+    try {
         let allComment = await commentData.getAllCommentsById(videoId);
     } catch(e) {
         if (e === 'No comments with that channelId') {
             return res.status(404).render('protected/videoNotFound', {videoNameOrId: videoId});
         }
-        res.status(400).render('error', {title: 'error', error: e});
-    }
-
-    try {
-        const allComment = await commentData.getAllCommentsById(videoId);
-        // res.render('comments',  {layout: null, ...updatedData}); // change render
-    } catch(e){
-        console.log(e)
+        return res.status(500).render('error', {title: 'error', error: e});
     }
 })
 // post new comment
@@ -43,7 +40,7 @@ router
         dislike = helpers.validateIDArray(dislike);
         videoId = helpers.validateID(videoId)
     }catch(e) {
-        res.status(400).render('error', {error: e})
+        return res.status(400).render('error', {error: e})
     }
     try{
         const newComment = await commentData.createComment(content, like, dislike, videoId, req.session.user.username);
@@ -75,7 +72,7 @@ router
         helpers.validateString(content, 'content')
         commentId = helpers.validateID(commentId);
     }catch(e){
-        res.status(400).render('error', {error: e})
+        return res.status(400).render('error', {error: e})
     }
     try {
         helpers.validateString(content, 'content')
@@ -102,7 +99,7 @@ router
     try{
         commentId = helpers.validateID(commentId);
     }catch(e) {
-        res.status(400).render('error', {error: e})
+        return res.status(400).render('error', {error: e})
     }
     try {
         const comment = await commentData.getCommentById(commentId);
@@ -132,7 +129,7 @@ router
     try{
         commentId = helpers.validateID(commentId);
     }catch(e) {
-        res.status(400).render('error', {error: e})
+        return res.status(400).render('error', {error: e})
     }
     try {
         return res.render('./protected/partials/replyForm',  {

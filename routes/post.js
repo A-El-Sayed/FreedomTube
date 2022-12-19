@@ -45,8 +45,8 @@ const uploadMiddleware = (req, res, next) => {
   uploadFunction(req, res, function (err) {
     if (err) {
       //TODO - it does res status 400- in developer console. Better display?
-      if (err == "filetype") return res.status(400).send("video files only");
-      return res.sendStatus(500); //default error
+      if (err == "filetype") return res.status(400).render('error', {title: 'error', error: "Must be a mp4, mov, or avi"});;
+      return res.status(500).render('error', {title: 'error', error: err}); //default error
     }
     next();
   });
@@ -67,12 +67,17 @@ router
   })
   .post(uploadMiddleware, async (req, res) => {
     const file = req.file;
+    try{
+      if(!file) throw "No file uploaded"
+    }catch(e){
+      return res.status(400).render('error', {title: 'error', error: e});;
+    }
     const videoTitle = xss(req.body.videoTitle);
     const s3Name = generateFileName();
     try{
       await helpers.checkIsProperString(videoTitle, "videoTitle");
     }catch(e){
-      res.status(400).render('error', {error: e});
+      return res.status(400).render('error', {error: e});
     }
 
 
@@ -112,7 +117,7 @@ router.route("/changeName").post(async (req, res) => {
     await helpers.checkIsProperString(s3Name, "s3Name");
     await helpers.checkIsProperString(videoTitle, "videoTitle");
   }catch(e) {
-    res.status(400).render('error', {error: e});
+    return res.status(400).render('error', {error: e});
   }
   // s3Name = "acd5b0265ee7331f6466771ef2fedfd0599fc0b50cbbb626bd6311324945e5ec"
   postData.renamePost(s3Name, videoTitle);
@@ -125,7 +130,7 @@ router.route("/delete").delete(async (req, res) => {
   try{
     await helpers.validateString("s3Name", s3Name, String.raw`^[a-z0-9]*$`, "Must be lowercase and numbers");
   }catch (e) {
-    res.status(400).render('error', {error: e});
+    return res.status(400).render('error', {error: e});
   }
   userData.deleteVideoByS3Name(req.session.user.username, s3Name);
   postData.deleteVideoByS3Name(s3Name);
@@ -192,7 +197,7 @@ router
         if (!ObjectId.isValid(videoId)) throw "invalid object id";
         videoId = videoId.trim();
     } catch(e) {
-      res.status(400).render('error', {error: e});
+      return res.status(400).render('error', {error: e});
     }
     try{
         // get the video
