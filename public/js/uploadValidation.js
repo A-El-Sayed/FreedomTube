@@ -4,30 +4,28 @@
   // Store refs to the form and all of its input to avoid re-querying each input
 
   // 2. Capture the form submission event
-  $('#upload-form').submit(async (event) => {
+  var uploadForm= $('#upload-form')
+  uploadForm.submit(async (event) => {
         // event.preventDefault(); 
         //after hitting the submit button, hide the previous error
-        $('#error').hide();
-        $('#videoTitleLabel').removeClass('error');
-        $('#videoTitle').removeClass('inputClass');
+        uploadForm.find('#error').hide();
+        uploadForm.find('#videoTitleLabel').removeClass('error');
+        uploadForm.find('#videoTitle').removeClass('inputClass');
         // 4. Check if all inputs are correct (correct range, required, etc) 
         // If yes, allow the form to submit- allow default event
 
-        let videoTitle = $('#videoTitle').val()
+        let videoTitle = uploadForm.find('#videoTitle').val()
         
         try{
           checkIsProperString(videoTitle, "videoTitle");
         }catch (e){
           // 5. If there's a bad input, the form should not be submitted then show an error message describing to the user how to correct it
           event.preventDefault();
-          errorDOM(e, "#videoTitleLabel", "#videoTitle")
+          errorDOMObject(e, uploadForm.find('#error'), uploadForm.find('#videoTitleLabel'), uploadForm.find('#videoTitle'))
         }
         //allow form to submit
     
-        //finally, clear the textbox of submission and put blinking cursor on textInbox for the next input
-        // $('#myForm').trigger('reset');
-        // $('#text_input').focus();
-    
+       
       });
 
   function bindEventsToPostItem(post) {
@@ -36,7 +34,7 @@
     post.find('#renameTitleLabel').removeClass('error');
     post.find('#renamedTitle').removeClass('inputClass');
       
-      let renameTitle = $('#renamedTitle').val()
+      let renameTitle = post.find('#renamedTitle').val()
       
       try{
         checkIsProperString(renameTitle, "renameTitle");
