@@ -116,8 +116,12 @@ router.route("/changeName").post(async (req, res) => {
     await helpers.validateString("s3Name", s3Name, String.raw`^[a-z0-9]*$`, "Must be lowercase and numbers");
     await helpers.checkIsProperString(s3Name, "s3Name");
     await helpers.checkIsProperString(videoTitle, "videoTitle");
+    let video = await postData.getVideoByS3Name(s3Name);
+    if(videoTitle === video.videoTitle ){
+      throw "cannot have the same name as the previous videoTitle"
+    }
   }catch(e) {
-    return res.status(400).render('error', {error: e});
+    return res.status(400).render('error', {title: "error", error: e});
   }
   // s3Name = "acd5b0265ee7331f6466771ef2fedfd0599fc0b50cbbb626bd6311324945e5ec"
   postData.renamePost(s3Name, videoTitle);
