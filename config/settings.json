@@ -1,6 +1,6 @@
 {
     "mongoConfig": {
-      "serverUrl": "mongodb://localhost:27017/",
+      "serverUrl": "mongodb+srv://mongodbCS546:CS546@freedomtube.rdwbskl.mongodb.net/test",
       "database": "Videos"
     }
   }

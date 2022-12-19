@@ -117,7 +117,7 @@ router
   .get(async (req, res) => {
     //code here for GET
     req.session.destroy();
-    res.render('./protected/logout');
+    res.render('./protected/logout', {title: "Logging out"});
   
   })
 

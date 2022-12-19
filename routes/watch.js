@@ -12,7 +12,7 @@ const commentData = data.comments;
 const helpers = require('../helper/validation');
 const xss = require('xss');
 const userData = data.users;
-let helpers = require("../helper/validation");
+
 let {ObjectId} = require('mongodb');
 
 router.get('/:watchVideoID', async(req, res) => {
@@ -65,6 +65,7 @@ router.get('/:watchVideoID', async(req, res) => {
         let channel = await userData.getChannelByS3Name(watchVideoID);
         let channelId = channel._id.toString();
         res.render('./protected/watch', {
+            title: "Watch",
             _id: post._id.toString(),
             ...post,
             imageUrl: imageUrl,

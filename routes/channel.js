@@ -4,7 +4,6 @@ const data = require('../data');
 const helpers = require('../helper/validation');
 const xss = require('xss');
 const channelData = data.users
-const helpers = require('../helper/validation');
 
 
 
