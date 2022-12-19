@@ -1,5 +1,6 @@
 (function ($) {
 
+
   // 1. Target your element in JavaScript. 
   // Store refs to the form and all of its input to avoid re-querying each input
 
@@ -42,7 +43,6 @@
         event.preventDefault();
         errorDOMObject(e, post.find('#error'), post.find('#renameTitleLabel'), post.find('#renamedTitle'))
       }
-
     })
   }
 
@@ -91,4 +91,4 @@
       }
   }
 })(window.jQuery);
-  
+ 
