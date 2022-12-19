@@ -23,32 +23,41 @@
         
         <label for="videoUploader"> Upload Video:  </label>
         <input type="file" name="video" id="videoUploader">
-        <label for="videoTitle"> Title:  </label>
+        <label for="videoTitle" id="videoTitleLabel"> Title:  </label>
         <input type="text" name="videoTitle" id="videoTitle">
         <button type="submit">Submit</button>
-        
+        <div id="error" class="error" hidden>I'm an error</div>
     </form>
 
     <h1>videos: </h1>
+    <div id="channelPostsArea">
     {{#each channelPosts}}
-        <h2>{{videoTitle}}</h2>
-        <form method = "POST" action="/api/posts/changeName">
-            <input type="hidden" name="s3Name" value={{s3Name}}>
-            <label for="renamedTitle"> Rename Title:  </label>
-            <input type="text" name="renamedTitle" id="renamedTitle">
-            <button type="submit">Submit</button>
-        </form>
+        <div>
+            <h2>{{videoTitle}}</h2>
+            <form method = "POST" action="/api/posts/changeName" id="rename-form">
+                <input type="hidden" name="s3Name" value={{s3Name}}>
+                <label for="renamedTitle" id="renameTitleLabel"> Rename Title:  </label>
+                <input type="text" name="renamedTitle" id="renamedTitle">
+                <button type="submit">Submit</button>
+            </form>
+            <div id="error" class="error" hidden>I'm an error</div>
 
-        <form action="/api/posts/delete" method="POST">
-            <input type="hidden" name="_method" value="DELETE">
-            <input type="hidden" name="s3Name" value={{s3Name}}>
-            <input type="submit" value="Delete">
-        </form>
-        
-            <video width="320" height="240" controls> 
-                <source src={{imageUrl}} type="video/mp4">
-                <source src={{imageUrl}} type="video/ogg">
-                Your browser does not support the video tag.
-            </video>
+            <form action="/api/posts/delete" method="POST">
+                <input type="hidden" name="_method" value="DELETE">
+                <input type="hidden" name="s3Name" value={{s3Name}}>
+                <input type="submit" value="Delete">
+            </form>
+            
+                <video width="320" height="240" controls> 
+                    <source src={{imageUrl}} type="video/mp4">
+                    <source src={{imageUrl}} type="video/ogg">
+                    Your browser does not support the video tag.
+                </video>
+        </div>
     {{/each}}
+    </div>
 </main>
+
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+        crossorigin="anonymous"></script>
+<script src="/public/js/uploadValidation.js"></script>
