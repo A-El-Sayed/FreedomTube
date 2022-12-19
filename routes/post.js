@@ -183,8 +183,8 @@ router
 .route('/likeUpdate/:videoId')
 .post(async(req,res) => {
     let videoId = req.params.videoId.trim();
-    const like = xss(req.body.like);
-    const dislike = xss(req.body.dislike);
+    const like =  req.body.like
+    const dislike = req.body.dislike
     
     try {
         if(typeof like !=='boolean') throw 'like must be a boolean'
