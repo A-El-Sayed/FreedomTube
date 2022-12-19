@@ -9,7 +9,7 @@
   uploadForm.submit(async (event) => {
         // event.preventDefault(); 
         //after hitting the submit button, hide the previous error
-        uploadForm.find('#error').hide();
+        uploadForm.find('#errorU').hide();
         uploadForm.find('#videoTitleLabel').removeClass('error');
         uploadForm.find('#videoTitle').removeClass('inputClass');
         // 4. Check if all inputs are correct (correct range, required, etc) 
@@ -22,7 +22,7 @@
         }catch (e){
           // 5. If there's a bad input, the form should not be submitted then show an error message describing to the user how to correct it
           event.preventDefault();
-          errorDOMObject(e, uploadForm.find('#error'), uploadForm.find('#videoTitleLabel'), uploadForm.find('#videoTitle'))
+          errorDOMObject(e, uploadForm.find('#errorU'), uploadForm.find('#videoTitleLabel'), uploadForm.find('#videoTitle'))
         }
         //allow form to submit
     
