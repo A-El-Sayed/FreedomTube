@@ -40,7 +40,7 @@ router.route('/popularVideos').get(async (req, res) => {
     try {
         let popularVideos = await postData.getPopularVideos()
         if (popularVideos.length == 0) {
-            res.status(404).render('error', {title: "error", error: "No popular videos now",
+            return res.status(404).render('error', {title: "error", error: "No popular videos now",
             title: "No Found Error",
             class: "error"})
         } else {
@@ -72,7 +72,7 @@ router.route('/history').get(async (req, res) => {
         }))
         history = history.reverse()
         if (history.length == 0) {
-            res.status(404).render('error', {error: "No videos in history",
+            return res.status(404).render('error', {error: "No videos in history",
             title: "No History Error",
             class: "error"})
         } else {

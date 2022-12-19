@@ -1,3 +1,12 @@
+<ul>
+    <li>Username: The username must have atleast 1 alphabet</li>
+    <li>Username: Only alphanumeric characters and should be atleast 4 characters long</li>
+    <li>Password: No spaces but can be any characters including special characters and should be atleast 6 characters long</li>
+    <li>Password: Needs to be atleast 1 uppercase letter</li>
+    <li>Password: Needs to be atleast 1 digit </li>
+    <li>Password: Needs to be atleast 1 special character </li>
+</ul>
+
 {{#if error}}
 <div class="form-group">
     <div class="alert alert-danger">
@@ -6,7 +15,6 @@
 </div>
 {{/if}}
 
-
 <form method="POST" action="/register" id="registration-form">
     <label for="usernameInput" id="userLabel">Username:</label>
     <input type="text" id="usernameInput" name="usernameInput">
@@ -14,9 +22,10 @@
     <input type="password" id="passwordInput" name="passwordInput">
     <button type="submit">Submit</button>
 </form>
+<div id="error" class="error" hidden>I'm an error</div>
 <a href="/">Already have an account? Click here to log-in</a>
-{{!-- 
+
 <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
         crossorigin="anonymous"></script>
-<script src="/public/js/registerValidation.js"></script> --}}
+<script src="/public/js/registerValidation.js"></script>
 

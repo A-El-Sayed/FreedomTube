@@ -29,7 +29,7 @@ const getChannelByS3Name = async (s3Name) => {
 const createUser = async (
   username, password
 ) => { 
-  helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
+  await helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
   username = username.toLowerCase(); //make case insensitive
 
   if(!(new RegExp(String.raw`[a-z]`)).test(username)){
@@ -44,7 +44,7 @@ const createUser = async (
     throw "Username: Already a user with that username"
   }
 
-  helpers.validateString("Password", password, String.raw`^[A-Za-z0-9\+\*\?\^\$\\\.\[\]\{\}\(\)\|\/\<\>\-\&\%\_\!]{6,}$`, "Password: No spaces but can be any characters including special characters and should be atleast 6 characters long")
+  await helpers.validateString("Password", password, String.raw`^[A-Za-z0-9\+\*\?\^\$\\\.\[\]\{\}\(\)\|\/\<\>\-\&\%\_\!]{6,}$`, "Password: No spaces but can be any characters including special characters and should be atleast 6 characters long")
   
   if(!(new RegExp(String.raw`[A-Z]`)).test(password)){
     throw("Password: Needs to be atleast 1 uppercase letter ")
@@ -78,10 +78,10 @@ const createUser = async (
 
 const checkUser = async (username, password) => { 
 
-  helpers.validateString("username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
+  await helpers.validateString("username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
   username = username.toLowerCase(); //make case insensitive
   
-  helpers.validateString("password", password, String.raw`^[A-Za-z0-9\+\*\?\^\$\\\.\[\]\{\}\(\)\|\/\<\>\-\&\%\_\!]{6,}$`, "Password: No spaces but can be any characters including special characters and should be atleast 6 characters long")
+  await helpers.validateString("password", password, String.raw`^[A-Za-z0-9\+\*\?\^\$\\\.\[\]\{\}\(\)\|\/\<\>\-\&\%\_\!]{6,}$`, "Password: No spaces but can be any characters including special characters and should be atleast 6 characters long")
   if(!(new RegExp(String.raw`[A-Z]`)).test(password)){
     throw("Password: Needs to be atleast 1 uppercase letter ")
   }
@@ -141,7 +141,7 @@ const getChannelById = async (id) => {
 };
 
 const getChannelByUsername = async (username) => {
-  helpers.validateString("username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
+  await helpers.validateString("username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
   username = username.toLowerCase();
   const userCollection = await users();
   const user = await userCollection.findOne({username: username});    
@@ -156,7 +156,7 @@ const getChannelByUsername = async (username) => {
  * @returns string
  */
  const removeChannel = async (username) => {
-  helpers.validateString("username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
+  await helpers.validateString("username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
   username = username.toLowerCase();
   const userCollection = await users();
   const user = await userCollection.findOne({username: username});    
@@ -238,7 +238,7 @@ const updateChannel = async(
 
     id = helpers.validateID(id);
 
-    helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
+    await helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
     username = username.toLowerCase(); //make case insensitive
 
     const userCollection = await users();
@@ -248,7 +248,7 @@ const updateChannel = async(
         throw "Username: Already a user with that username"
     }
 
-    helpers.validateString("Password", password, String.raw`^[A-Za-z0-9\+\*\?\^\$\\\.\[\]\{\}\(\)\|\/\<\>\-\&\%\_\!]{6,}$`, "Password: No spaces but can be any characters including special characters and should be atleast 6 characters long")
+    await helpers.validateString("Password", password, String.raw`^[A-Za-z0-9\+\*\?\^\$\\\.\[\]\{\}\(\)\|\/\<\>\-\&\%\_\!]{6,}$`, "Password: No spaces but can be any characters including special characters and should be atleast 6 characters long")
     
     if(!(new RegExp(String.raw`[A-Z]`)).test(password)){
         throw("Password: Needs to be atleast 1 uppercase letter ")
@@ -298,7 +298,7 @@ const updateUsername = async(
 ) => {
     id = helpers.validateID(id);
 
-    helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
+    await helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
     username = username.toLowerCase(); //make case insensitive
 
     const userCollection = await users();
@@ -332,7 +332,7 @@ const deleteVideoByS3Name = async(
   username,
   s3Name
 ) => {
-  helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
+  await helpers.validateString("Username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Username: Only alphanumeric characters and should be atleast 4 characters long")
   await helpers.validateString("s3Name", s3Name, String.raw`^[a-z0-9]*$`, "Must be lowercase and numbers");
   const userCollection = await users();
   const user = await userCollection.findOne({username: username});

@@ -40,6 +40,11 @@ router
     let passwordInput = xss(req.body.passwordInput)
     try {
       helpers.validateString("username", usernameInput, String.raw`^[A-Za-z0-9]{4,}$`, "Only alphanumeric characters and should be atleast 4 characters long")
+      if(!(new RegExp(String.raw`[A-Za-z]`)).test(usernameInput)){
+        throw("Username: Needs to be atleast 1 alphabet ")
+      }
+
+
       helpers.validateString("password", passwordInput, String.raw`^[A-Za-z0-9\+\*\?\^\$\\\.\[\]\{\}\(\)\|\/\<\>\-\&\%\_\!]{6,}$`, "No spaces but can be any characters including special characters and should be atleast 6 characters long")
       if(!(new RegExp(String.raw`[A-Z]`)).test(passwordInput)){
         throw("Password: Needs to be atleast 1 uppercase letter ")

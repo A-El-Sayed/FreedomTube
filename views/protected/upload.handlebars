@@ -18,6 +18,7 @@
 <h1>{{title}}</h1> {{!--Video Uploader--}}
 <main>
     <p>Please upload a video and insert its title!</p>
+    <p>Must be a mp4, mov, or avi</p>
     <form method = "POST" action="/api/posts" enctype="multipart/form-data">
         
         <label for="videoUploader"> Upload Video:  </label>
@@ -28,20 +29,7 @@
         
     </form>
 
-    
-
-
-    <p>username: </p>
-    <p>{{username}}</p> 
-    <p>subscriber: </p>
-    <p>{{subscriber}}</p>
-    <p>total views: </p>
-    <p>{{totalviews}}</p>
-    <p>subscribed channels: </p>
-    {{#each subscribedChannels}}
-        <p>{{subscribedChannels}}</p>
-    {{/each}}
-    <p>videos: </p>
+    <h1>videos: </h1>
     {{#each channelPosts}}
         <h2>{{videoTitle}}</h2>
         <form method = "POST" action="/api/posts/changeName">
