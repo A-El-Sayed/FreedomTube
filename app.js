@@ -140,7 +140,7 @@ app.use('/protected', (req, res, next) => {
         //not login
         return res.status(403).render('./unprotected/forbiddenAccess');
     } else {
-      const watchS3Name = req.params.s3Name.trim();
+      let watchS3Name = req.params.s3Name.trim();
       let s3;
       let videoId;
       let userId;
