@@ -131,9 +131,12 @@ router
   .post(async (req, res) => {
     //code here for POST
     // let { username } = req.body;
-    let username = xss(req.body.username);
+    let username = xss(req.body.usernameInput);
     try {
       helpers.validateString("username", username, String.raw`^[A-Za-z0-9]{4,}$`, "Only alphanumeric characters and should be atleast 4 characters long")
+      if(!(new RegExp(String.raw`[A-Za-z]`)).test(username)){
+        throw("Username: Needs to be atleast 1 alphabet ")
+      }
       username = username.toLowerCase();
       userId = (await userData.getChannelByUsername(req.session.user.username))._id.toString()
       await userData.updateUsername(userId, username)
