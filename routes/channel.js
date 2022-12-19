@@ -3,7 +3,6 @@ const router = express.Router();
 const data = require('../data');
 const xss = require('xss');
 const channelData = data.users
-const helpers = require('../helper/validation');
 
 
 

@@ -1,30 +1,42 @@
 <nav>
-    <a href="http://localhost:3000/videoFeedRoutes/">Home</a> |
-    <a href="http://localhost:3000/videoFeedRoutes/upload">UPLOAD</a> |
-    <a href="http://localhost:3000/videoFeedRoutes/popularVideos">POPULAR</a>|
-    <a href="http://localhost:3000/subscribedChannel">Subscribed Channels</a>|
-    <a href="http://localhost:3000/videoFeedRoutes/history">HISTORY</a> |
-    <a href="http://localhost:3000/videoFeedRoutes/setting">SETTING</a> |
-    <a href="http://localhost:3000/channel/delete">DELETE</a> |
-    <a href="/logout">Logout</a>
-    <form action="/api/posts/searchvideo" method="POST" class="search-video">
+  <a href="http://localhost:3000/videoFeedRoutes/">Home</a>
+  |
+  <a href="http://localhost:3000/videoFeedRoutes/upload">UPLOAD</a>
+  |
+  <a href="http://localhost:3000/videoFeedRoutes/popularVideos">POPULAR</a>|
+  <a href="http://localhost:3000/subscribedChannel">Subscribed Channels</a>|
+  <a href="http://localhost:3000/videoFeedRoutes/history">HISTORY</a>
+  |
+  <a href="http://localhost:3000/videoFeedRoutes/setting">SETTING</a>
+  |
+  <a href="http://localhost:3000/channel/delete">DELETE</a>
+  |
+  <a href="/logout">Logout</a>
+  <form action="/api/posts/searchvideo" method="POST" class="search-video">
     <label for="search-for-video">
       Search
-      <input type="text" name="searchVideoName" id="search-for-video" placeholder="Video Title" />
+      <input
+        type="text"
+        name="searchVideoName"
+        id="search-for-video"
+        placeholder="Video Title"
+      />
     </label>
     <button type="submit">Submit</button>
   </form>
 </nav>
 <main>
-    <h1>Subscribed Channels</h1>
-    <ol>
+  <h1>Subscribed Channels</h1>
+  <ol>
     {{#each channels}}
-        <li><h2>{{this.username}}</h2></li>
-            <ul>
-                {{#each this.videoInfo}}
-                <li><a href="/watch/{{this.s3Name}}">  <h2>{{this.videoTitle}}</a></li>
-                {{/each}}
-            </ul>
-    {{/each}} 
-    </ol>
+      <li><h2>{{this.username}}</h2>
+        <ul>
+          {{#each this.videoInfo}}
+            <li><a href="/watch/{{this.s3Name}}"><h2
+                >{{this.videoTitle}}</h2></a></li>
+          {{/each}}
+        </ul>
+      </li>
+    {{/each}}
+  </ol>
 </main>
