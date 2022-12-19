@@ -90,7 +90,7 @@ router
 })
 // get reply to the comment
 .get(async(req,res) => {
-    const commentId = req.params.commentId.trim();
+    let commentId = req.params.commentId.trim();
 
     try{
         commentId = helpers.validateID(commentId);
@@ -119,19 +119,20 @@ router
 //get the reply form
 .route('/replyForm/:commentId')
 .get(async(req,res) => {
-    const commentId = req.params.commentId.trim();
+    let commentId = req.params.commentId.trim();
     
-    const comment = await commentData.getCommentById(commentId);
     try{
         commentId = helpers.validateID(commentId);
     }catch(e) {
         return res.status(400).render('error', {error: e})
     }
     try {
+        const comment = await commentData.getCommentById(commentId);
+    
         return res.render('./protected/partials/replyForm',  {
             layout: null});
     } catch(e) {
-        if (e === "This comment doesn't exist") {
+        if (e === 'No comment with that commentId') {
             return res.status(404).render('error', {title: 'error', error: e});
         } else if (e === 'could not add comment reply successfully')
             return res.status(500).render('error', {title: 'error', error: e});
