@@ -63,7 +63,7 @@ app.use(session({
 
   // Convert post to delete method
   app.use('/channel/delete', (req, res, next) => {
-    let method = xss(req.body._method);
+    let method = req.body._method;
 
     if (req.method == 'POST' && method){
       req.method = method
@@ -72,7 +72,7 @@ app.use(session({
   });
 
   app.use('/api/posts/delete', (req, res, next) => {
-    let method = xss(req.body._method);
+    let method = req.body._method;
     if (req.method == 'POST' && method){
       req.method = method
     }

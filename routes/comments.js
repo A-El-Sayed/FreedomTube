@@ -30,20 +30,16 @@ router
 // post new comment
 .post(async(req,res) => {
     let content = xss(req.body.content);
-    let like = xss(req.body.like);
-    let dislike = xss(req.body.dislike);
     let videoId = req.params.videoId.trim();
 
     try {
         await helpers.validateString(content, "content" );
-        like = helpers.validateIDArray(like);
-        dislike = helpers.validateIDArray(dislike);
         videoId = helpers.validateID(videoId)
     }catch(e) {
         return res.status(400).render('error', {error: e})
     }
     try{
-        const newComment = await commentData.createComment(content, like, dislike, videoId, req.session.user.username);
+        const newComment = await commentData.createComment(content, videoId, req.session.user.username);
         console.log(newComment);
         return res.render('./protected/partials/comments',  {
             AddReply: false,
@@ -150,8 +146,8 @@ router
 .route('/likeUpdate/:commentId')
 .post(async(req,res) => {
     let commentId = req.params.commentId.trim();
-    const like = xss(req.body.like);
-    const dislike = xss(req.body.dislike);
+    const like = req.body.like;
+    const dislike = req.body.dislike;
     
     try {
         if(typeof like !=='boolean') throw 'like must be a boolean'
