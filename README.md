@@ -23,7 +23,7 @@ npm start
 - NodeJS
 - MongoDB
 - Javascript
-- MongDB Compass
+- MongoDB Compass
 - MongoDB Atlas Clusters
 - Express
 - AWS S3 Bucket
